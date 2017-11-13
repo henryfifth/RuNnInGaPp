@@ -1,77 +1,74 @@
-var express = require('express');
-var app = require("express")();
-var server = require('http').Server(app);
-var io = require('socket.io');
-let bodyParser = require("body-parser");
-var fetch = require('node-fetch');
-var expressSession = require("express-session");
-var passport = require("passport");
-var LocalStrategy = require("passport-local").Strategy;
-var passwordHash = require("password-hash");
-var mongoose = require('mongoose');
-var uriUtil = require('mongodb-uri');
-var Item = require('./models/items.js');
-var cookieParser = require('cookie-parser');
-const nodemailer = require('nodemailer');
-var http = require('http');
-var path  = require('path');
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+// const io = require('socket.io');
+const bodyParser = require("body-parser");
+// const expressSession = require("express-session");
+// const passport = require("passport");
+// const LocalStrategy = require("passport-local").Strategy;
+// const passwordHash = require("password-hash");
+const mongoose = require('mongoose');
+const uriUtil = require('mongodb-uri');
+const User = require('./models/users.js');
+const Route = require('./models/routes.js');
+// const cookieParser = require('cookie-parser');
+// const nodemailer = require('nodemailer');
+const http = require('http');
+const path = require('path');
 require('dotenv').config();
 
-var mongodbUri = process.env.mongoStuff;
-var mongooseUri = uriUtil.formatMongoose(mongodbUri);
-var options = {
+const mongodbUri = 'mongodb://localhost/Users';
+const mongooseUri = uriUtil.formatMongoose(mongodbUri);
+const options = {
   server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
   replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
 };
-var ioServer = io(server, {
-  origins: allowedOrigins
-});
 mongoose.connect(mongooseUri, options);
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  console.log('Item database connected.');
+  console.log('Database connected.');
 });
 
-app.use(bodyParser.json({ type: 'application/json' }));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressSession({ secret: "moby" }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static('./potluck/build'));
+// app.use(bodyParser.json({ type: 'application/json' }));
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(expressSession({ secret: "Lee is a motherfucking BEAST!" }));
+// app.use(passport.initialize());
+// app.use(passport.session());
+// app.use(express.static('./potluck/build'));
 
-passport.use(new LocalStrategy({ username: "email", password: "password" },  (email, password, done) => {
-  User.findOne({
-    email: email
-  }, (err, foundUser) => {
-    if (err) {
-      console.log(err);
-      next(err);
-    } else if (foundUser == null){
-      return done('Something went wrong! Please try again', null)
-    } else {
-      if (passwordHash.verify(password, foundUser.password)) {
-        return done(null, foundUser);
-      } else {
-        return done("password and username don't match", null);
-      }
-    }
-  })
-})
-)
+// passport.use(new LocalStrategy({ username: "email", password: "password" }, (email, password, done) => {
+//   User.findOne({
+//     email: email
+//   }, (err, foundUser) => {
+//     if (err) {
+//       console.log(err);
+//       next(err);
+//     } else if (foundUser == null) {
+//       console.log(foundUser)
+//       return done('Something went wrong! Please try again', null)
+//     } else {
+//       if (passwordHash.verify(password, foundUser.password)) {
+//         return done(null, foundUser);
+//       } else {
+//         return done("password and username don't match", null);
+//       }
+//     }
+//   });
+// }));
 
-passport.serializeUser(function (user, done) {
-  done(null, user._id);
-})
+// passport.serializeUser(function (user, done) {
+//   done(null, user._id);
+// })
 
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
-    if (err) {
-    } else {
-      done(null, user);
-    }
-  })
-})
+// passport.deserializeUser(function (id, done) {
+//   User.findById(id, function (err, user) {
+//     if (err) {
+//     } else {
+//       done(null, user);
+//     }
+//   })
+// })
 
 function verifyEmail(email) {
   let emailReplaced = email.replace(/ /g, '');
@@ -109,10 +106,10 @@ function inviteEmail(email) {
         subject: 'Hello ✔',
         text: 'Hi there!',
         html: '<body>' +
-        '<style>#bob{font-size: 50%;}</style>' +
-        "<p>You have received an invitation to join your friends on our app, Potluck! </p>" +
-        "<footer class=bob>Access our application at http://potluck-react.herokuapp.com ! Create an account, then join the list 'Blunderbuss' using the password '123' !</footer>" +
-        '</body>',
+          '<style>#bob{font-size: 50%;}</style>' +
+          "<p>You have received an invitation to join your friends on our app, Potluck! </p>" +
+          "<footer class=bob>Access our application at http://potluck-react.herokuapp.com ! Create an account, then join the list 'Blunderbuss' using the password '123' !</footer>" +
+          '</body>',
         attachments: [{
           filename: 'nyan cat ✔.gif',
           path: './nyan.gif',
@@ -121,13 +118,67 @@ function inviteEmail(email) {
       };
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.log(error)
-            return error;
+          console.log(error)
+          return error;
         }
       });
     });
   }
 }
+
+function sanitize(input){
+  console.log(input)
+  tim = input.toString();
+  bob = input.split('');
+  badChar = ['(', ')', '<', '>', '{', '}', '/', ';'];
+  bob.forEach((e, i)=>{
+    badChar.forEach((e2, i2)=>{
+      if(e === e2){
+        return false
+      }
+    });
+  });
+  return input
+}
+
+app.post('/signup', (req, res, next) => {
+  console.log(req.body)
+  var user = new User();
+  user.firstName = sanitize(req.body.firstName);
+  user.lastName = sanitize(req.body.lastName);
+  user.email = sanitize(req.body.email);
+  user.password = req.body.password;
+  if(user.firstName && user.lastName && verifyEmail(user.email)){
+    User.findOne({
+      email: user.email
+    }, (err, foundUser) => {
+      if (err) {
+        res.json({
+          found: false,
+          message: err,
+          success: false
+        });
+      } else {
+        user.save((error, userReturned) => {
+          if (error) {
+            res.json({
+              found: true,
+              message: 'An account is already associated with that email address.',
+              success: false
+            });
+          } else {
+            res.json({
+              userReturned: userReturned,
+              found: true,
+              message: "Account created.",
+              success: true
+            });
+          }
+        });
+      }
+    });
+  }
+});
 
 var port = process.env.PORT || 5000;
 server.listen(port, () => {
