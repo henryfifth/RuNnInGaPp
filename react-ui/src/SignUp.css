@@ -1,0 +1,27 @@
+.signup-card {
+  margin-left: 25%;
+  margin-right: 25%;
+  width: 50%;
+  height: 100%;
+  display: flex;
+}
+
+.signup-button{
+  margin-left: 30%;
+  margin-right: 30%;
+  width: 40%;
+}
+
+.signup-input{
+  flex-direction: column;
+
+}
+
+.signup-title{
+  padding: 5px;
+  text-align: center;
+}
+
+.color-picker{
+  justify-content: center;
+}

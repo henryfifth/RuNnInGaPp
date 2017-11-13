@@ -1,0 +1,23 @@
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.bg{
+  position: absolute;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
+  margin: 0px;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  overflow-x: scroll;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
