@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import SignUp from "./SignUp.js";
 import Login from './Login.js';
-// import Home from './Home.js';
+import Homepage from './Homepage.js';
 import Profile from './Profile.js';
 import {
   BrowserRouter as Router,
@@ -10,6 +10,8 @@ import {
 } from 'react-router-dom';
 import { Provider } from "mobx-react";
 import UserStore from "./Stores/userStore";
+import Navbar from './Navbar/Navbar';
+import {Container} from 'semantic-ui-react';
 // var axios = require('axios');
 
 class App extends Component {
@@ -19,9 +21,13 @@ class App extends Component {
         <Provider UserStore={new UserStore()}>
           <Router>
             <div className='bg'>
-              <Route path='/Profile' render={()=><Profile/>}/>
-              <Route path='/SignUp' render={() => <SignUp />} />
-              <Route path='/Login' render={() => <Login />} />
+              <Navbar/>
+              <Container>
+                <Route exact path='/' render={()=><Homepage/>}/>
+                <Route path='/Profile' render={()=><Profile/>}/>
+                <Route path='/SignUp' render={() => <SignUp />} />
+                <Route path='/Login' render={() => <Login />} />
+              </Container>
             </div>
           </Router>
         </Provider>
