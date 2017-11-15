@@ -2,19 +2,18 @@ import React, { Component } from 'react';
 import { Button, Col, CardSubtitle, FormGroup, Label, Input, Card, CardBody, CardTitle } from 'reactstrap';
 import './SignUp.css';
 import ReactPasswordStrength from 'react-password-strength';
+import {inject, observer} from 'mobx-react';
 var axios = require('axios');
 
-class SignUp extends Component {
+var SignUp = observer(class SignUp extends Component {
   constructor() {
     super();
     this.inputfirstNameChange = this.inputfirstNameChange.bind(this);
     this.inputlastNameChange = this.inputlastNameChange.bind(this);
     this.inputemailChange = this.inputemailChange.bind(this);
-    this.handleSignup = this.handleSignup.bind(this);
     this.changeCallback = this.changeCallback.bind(this);
-    this.confirmPassword = this.confirmPassword.bind(this);
-    this.submitSignup = this.submitSignup.bind(this);
     this._handleKeyPress = this._handleKeyPress.bind(this);
+    this.confirmPassword = this.confirmPassword.bind(this);
     this.state = {
       firstName: '',
       lastName: '',
@@ -22,52 +21,9 @@ class SignUp extends Component {
       password: '',
       confirmPassword: '',
       message: '',
-      success: false
-    }
-  }
-
-  submitSignup(signupObj) {
-    return new Promise((resolve, reject) => {
-      axios.post('/signup', {
-          firstName: signupObj.firstName,
-          lastName: signupObj.lastName,
-          email: signupObj.email,
-          password: signupObj.password,
-        }).then((userObj) => {
-        this.setState({
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          message: userObj.data.message,
-          success: userObj.data.success
-        })
-        console.log(userObj)
-        resolve();
-      }
-    )})
-  }
-
-  handleSignup() {
-    if (this.state.password === this.state.confirmPassword) {
-      return new Promise((resolve, reject) => {
-        this.submitSignup({
-          firstName: this.state.firstName,
-          lastName: this.state.lastName,
-          email: this.state.email,
-          password: this.state.password,
-        }).then((res) => {
-          if (this.state.success) {
-            console.log('success')
-          }
-          resolve();
-        })
-      })
-    } else {
-      this.setState({
-        message: 'Passwords do not match'
-      })
+      success: false,
+      userReturned: null,
+      strength: 1,
     }
   }
 
@@ -89,7 +45,7 @@ class SignUp extends Component {
 
   _handleKeyPress(e) {
     if (e.key === "Enter") {
-      this.handleSignup();
+      this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email);
     }
   }
 
@@ -97,9 +53,10 @@ class SignUp extends Component {
     return (
       <div className="signup">
         <Col className='signup-col'></Col>
-        <Card className="signup-card">
+        <Card className="signup-card" style={{ 'marginTop': '30px' }}>
           <CardBody>
             <CardTitle className="signup-title"> Sign Up</CardTitle>
+            {this.state.message}
             <FormGroup className="signup-input">
               <Label for="firstName">First Name:</Label>{' '}
               <Input type="text" onChange={this.inputfirstNameChange} value={this.state.firstName} name="firstName" id="firstName" placeholder="John" />
@@ -118,9 +75,9 @@ class SignUp extends Component {
               <ReactPasswordStrength
                 value={this.state.password}
                 changeCallback={this.changeCallback}
-                minLength={5}
-                minScore={2}
-                scoreWords={['weak', 'okay', 'good', 'strong', 'stronger']}
+                minLength={6}
+                minScore={3}
+                scoreWords={['very weak', 'weak', 'good', 'strong', 'stronger']}
                 inputProps={{ placeholder: "abc123", autoComplete: "off", className: "form-control" }}
               />
             </FormGroup>
@@ -128,11 +85,12 @@ class SignUp extends Component {
               <Label for="password">Confirm Password:</Label>{' '}
               <Input type="password" onChange={this.confirmPassword} value={this.state.confirmPassword} name="password" id="password" placeholder="abc123" onKeyPress={this._handleKeyPress} />
             </FormGroup>
+            <Button onClick={this.handleSignup}>Submit</Button>
           </CardBody>
         </Card>
       </div>
     );
   };
-}
+})
 
-export default SignUp;
+export default inject('UserStore')(SignUp);

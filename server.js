@@ -14,8 +14,9 @@ var User = require('./models/users.js');
 const Route = require('./models/routes.js')
 var cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer');
+const helmet = require('helmet');
 var http = require('http');
-var path  = require('path');
+var path = require('path');
 require('dotenv').config();
 
 var mongodbUri = 'mongodb://localhost/Users';
@@ -32,24 +33,25 @@ mongoose.connect(mongooseUri, options);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  console.log('Item database connected.');
+  console.log('User database connected.');
 });
 
+app.use(helmet())
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressSession({ secret: "moby" }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static('./potluck/build'));
+app.use(express.static('./react-ui/build'));
 
-passport.use(new LocalStrategy({ username: "email", password: "password" },  (email, password, done) => {
+passport.use(new LocalStrategy({ username: "email", password: "password" }, (email, password, done) => {
   User.findOne({
     email: email
   }, (err, foundUser) => {
     if (err) {
       console.log(err);
       next(err);
-    } else if (foundUser == null){
+    } else if (foundUser == null) {
       return done('Something went wrong! Please try again', null)
     } else {
       if (passwordHash.verify(password, foundUser.password)) {
@@ -69,6 +71,7 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (id, done) {
   User.findById(id, function (err, user) {
     if (err) {
+      console.log(err);
     } else {
       done(null, user);
     }
@@ -111,10 +114,10 @@ function inviteEmail(email) {
         subject: 'Hello ✔',
         text: 'Hi there!',
         html: '<body>' +
-        '<style>#bob{font-size: 50%;}</style>' +
-        "<p>You have received an invitation to join your friends on our app, Potluck! </p>" +
-        "<footer class=bob>Access our application at http://potluck-react.herokuapp.com ! Create an account, then join the list 'Blunderbuss' using the password '123' !</footer>" +
-        '</body>',
+          '<style>#bob{font-size: 50%;}</style>' +
+          "<p>You have received an invitation to join your friends on our app, Potluck! </p>" +
+          "<footer class=bob>Access our application at http://potluck-react.herokuapp.com ! Create an account, then join the list 'Blunderbuss' using the password '123' !</footer>" +
+          '</body>',
         attachments: [{
           filename: 'nyan cat ✔.gif',
           path: './nyan.gif',
@@ -123,157 +126,132 @@ function inviteEmail(email) {
       };
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.log(error)
-            return error;
+          console.log(error)
+          return error;
         }
       });
     });
   }
 }
 
-function sendThing(){
+function sendThing() {
   return true
 }
 
-ioServer.on('connection', (client)=>{
-  console.log('WEVE CONNECTGED')
-  client.on('joinHouse', (house)=>{
-    console.log('joining a house: ' + house);
-    client.join(house);
-  });
+ioServer.on('connection', (client) => {
+  console.log('client connected');
 
-  client.on('deleteItem', (data)=>{
-    console.log('deteled item')
-    House.findByIdAndUpdate({ _id:data.house  }, "items", (err, house) => {
-      var num = null;
-      house.items.forEach(function (e, i) {
-        if (e._id == data._id) {
-          num = house.items.indexOf(e);
-        }
-      });
-      house.items.splice(num, 1);
-      house.save((err, itemReturned) => {
-        if (err) {
-          console.log(err);
-        } else {
-          House.findById({ _id: data.house }, (err, house) => {
-            if (err) {
-              console.log(err);
-            } else {
-              ioServer.in(data.house).emit('updatedMyItems', house.items)
-            }
-          });
-        }
-      });
-    });
-  });
-
-  client.on('selectorToServer', (data)=>{
-    console.log('selected to server')
-    House.findByIdAndUpdate({ _id: data.house }, "items", (err, house) => {
-      house.items.forEach(function (e, i) {
-        if (e._id == data._id) {
-          e.selector = data.selector
-          e.color = data.user.color
-        }
-      });
-      house.save((err, itemReturned) => {
-        if (err) {
-          console.log(err);
-        } else {
-          House.findById({ _id: data.house }, (err, house) => {
-            if (err) {
-              console.log(err);
-            } else {
-              ioServer.in(data.house).emit('updatedMyItems', house.items)
-            }
-          });
-        }
-      });
-    })
-  });
-
-  client.on('addedItem', (data)=>{
-    console.log('adding an item')
-    House.findByIdAndUpdate({ _id: data.house }, "items", (err, house) => {
-      if (err) {
-        console.log(err);
-      } else {
-        house.items.push({ name: data.item.name, quantity: data.item.quantity, selector: false })
-        house.save((err, itemReturned) => {
-          if (err) {
-            console.log(err);
-          } else {
-            House.findById({ _id: data.house }, (err, house) => {
-              if (err) {
-                console.log(err);
-              } else {
-                ioServer.in(data.house).emit('updatedMyItems', house.items)
-              }
-            });
-          }
-        });
-      };
-    })
-  })
-
-  client.on('disconnect', ()=>{console.log("client disconnected")});
+  client.on('disconnect', () => { console.log("client disconnected") });
 });
 
-//  app.get('/*', function (req, res) {
-//    res.sendFile(path.join(__dirname, 'potluck', 'build', 'index.html'));
-//  });
-
- function sanitize(input){
-  console.log(input)
+function sanitize(input) {
   tim = input.toString();
   bob = input.split('');
-  badChar = ['(', ')', '<', '>', '{', '}', '/', ';'];
-  bob.forEach((e, i)=>{
-    badChar.forEach((e2, i2)=>{
-      if(e === e2){
-        return false
+  badChar = ['(', ')', '<', '>', '{', '}', '/', ';', '*', '[', ']', '"', "'"];
+  bool = true
+  bob.forEach((e, i) => {
+    badChar.forEach((e2, i2) => {
+      if (e === e2) {
+        console.log('someone tried to put in some bad characters');
+        console.log(input)
+        bool = false
       }
     });
   });
-  return input
+  if (bool) {
+    return input
+  } else {
+    return false
+  }
 }
 app.post("/signup", (req, res, next) => {
   var user = new User();
-  user.firstName = sanitize(req.body.firstName);
-  user.lastName = sanitize(req.body.lastName);
-  user.email = verifyEmail(req.body.email);
+  user.firstName = req.body.firstName;
+  user.lastName = req.body.lastName;
+  user.email = req.body.email;
   user.password = req.body.password;
-  User.findOne({
-    email: user.email
-  }, (err, foundUser) => {
-    if (err) {
-      console.log(err)
-      res.json({
-        found: false,
-        message: err,
-        success: false
-      });
-    } else {
-      user.save((error, userReturned) => {
-        if (error) {
+  user.routes = [{created: []}, {ran: []}, {saved: []}]
+  user.stats = [{name: 'Mile'}, {name: '1k'}, {name: '3k'}, {name: '5k'}, {name: '10k'}, {name: '15k'}, {name: '20k'}, {name: 'Marathon'}]
+  if (sanitize(user.firstName) != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
+    User.findOne({
+      email: user.email
+    }, (err, foundUser) => {
+      if (err) {
+        console.log(err)
+        res.json({
+          found: false,
+          message: err,
+          success: false
+        });
+      } else {
+        user.save((error, userReturned) => {
+          if (error) {
             console.log(error);
             res.json({
-                found: true,
-                message: 'An account is already associated with that email address.',
-                success: false
+              found: true,
+              message: 'An account is already associated with that email address.',
+              success: false
             });
+          } else {
+            res.json({
+              userReturned: userReturned,
+              found: true,
+              message: "Account created.",
+              success: true
+            });
+          }
+        });
+      }
+    });
+  } else {
+    res.json({
+      message: 'Due to ecurity issues, You can only input regular characters',
+      success: false
+    })
+  }
+});
+
+app.post('/login', function (req, res, next) {
+  passport.authenticate('local', function (err, user) {
+    if (err) {
+      res.json({ found: false, success: false, err: true, message: err });
+    } else if (user) {
+      req.logIn(user, (err) => {
+        if (err) {
+          console.log(err);
+          next(err);
+          res.json({ found: true, success: false, message: err })
         } else {
-          res.json({
-            userReturned: userReturned,
-            found: true,
-            message: "Account created.",
-            success: true
-          });
+          res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n' })
         }
-      });
+      })
+    } else {
+      res.json({ found: false, success: false, message: "Password and username don't match." })
     }
-  });
+  })(req, res, next);
+  var email = req.body.email;
+  var password = req.body.password;
+});
+
+app.post('/logout', (req, res) => {
+  req.logout();
+  req.session.destroy();
+  res.json({ message: 'You are logged out', success: true })
+});
+
+app.post('/getUser', (req, res, next) => {
+  if (req.session.passport) {
+    User.findById(req.session.passport.user, (err, userFound) => {
+      if (err) {
+        console.log(err);
+        next(err);
+      } else {
+        res.json(userFound)
+      }
+    });
+  }else{
+    res.json({message: 'No user logged in.'})
+  }
 });
 
 var port = process.env.PORT || 5000;
