@@ -24,7 +24,7 @@ var Profile = observer(class Profile extends Component {
         } else {
           return <tr><td>You have no {e.name} time yet. Why don't you go for a run?</td></tr>
         }
-      })
+      }) 
       return (
         <div>
           <p>Hello, {this.props.UserStore.user.firstName}</p>

@@ -12,7 +12,6 @@ import { Provider } from "mobx-react";
 import UserStore from "./Stores/userStore";
 import Navbar from './Navbar/Navbar';
 import {Container} from 'semantic-ui-react';
-// var axios = require('axios');
 
 class App extends Component {
   render() {
@@ -25,8 +24,8 @@ class App extends Component {
               <Container>
                 <Route exact path='/' render={()=><Homepage/>}/>
                 <Route path='/Profile' render={()=><Profile/>}/>
-                <Route path='/SignUp' render={() => <SignUp />} />
-                <Route path='/Login' render={() => <Login />} />
+                <Route path='/SignUp' render={()=><SignUp/>}/>
+                <Route path='/Login' render={()=><Login/>}/>
               </Container>
             </div>
           </Router>
@@ -37,4 +36,3 @@ class App extends Component {
 }
 
 export default App;
-
