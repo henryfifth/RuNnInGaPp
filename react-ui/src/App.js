@@ -33,10 +33,10 @@ class App extends Component {
               </Segment>
                 <Route exact path='/' render={()=><Homepage/>}/>
               <Container>
-                <Route path='/Profile' render={()=><Profile/>}/>
-                <Route path='/SignUp' render={()=><SignUp/>}/>
-                <Route path='/Login' render={()=><Login/>}/>
-                <Route path='/Logout' render={()=><Logout/>}/>
+                <Route path='/profile' render={()=><Profile/>}/>
+                <Route path='/signUp' render={()=><SignUp/>}/>
+                <Route path='/login' render={()=><Login/>}/>
+                <Route path='/logout' render={()=><Logout/>}/>
               </Container>
               <Footer/>
             </div>

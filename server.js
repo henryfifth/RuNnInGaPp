@@ -17,6 +17,7 @@ const nodemailer = require('nodemailer');
 const helmet = require('helmet');
 var http = require('http');
 var path = require('path');
+require('dotenv').config();
 
 var mongodbUri = 'mongodb://'+process.env.MLAB_USERNAME+':'+process.env.MLAB_PASSWORD+'@ds259855.mlab.com:59855/everything';
 var mongooseUri = uriUtil.formatMongoose(mongodbUri);
@@ -38,7 +39,7 @@ db.once('open', function () {
 app.use(helmet())
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressSession({ secret: "moby" }));
+app.use(expressSession({ secret: process.env.RUNNING_SECRET }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('./react-ui/build'));
