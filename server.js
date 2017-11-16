@@ -17,7 +17,7 @@ const nodemailer = require('nodemailer');
 const helmet = require('helmet');
 var http = require('http');
 var path = require('path');
-// require('dotenv').config();
+require('dotenv').config();
 
 var mongodbUri = 'mongodb://'+process.env.MLAB_USERNAME+':'+process.env.MLAB_PASSWORD+'@ds259855.mlab.com:59855/everything';
 var mongooseUri = uriUtil.formatMongoose(mongodbUri);
