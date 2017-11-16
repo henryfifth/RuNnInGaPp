@@ -17,9 +17,10 @@ const nodemailer = require('nodemailer');
 const helmet = require('helmet');
 var http = require('http');
 var path = require('path');
+var sha256 = require('js-sha256');
 require('dotenv').config();
 
-var mongodbUri = 'mongodb://'+process.env.MLAB_USERNAME+':'+process.env.MLAB_PASSWORD+'@ds259855.mlab.com:59855/everything';
+var mongodbUri = 'mongodb://' + process.env.MLAB_USERNAME + ':' + process.env.MLAB_PASSWORD + '@ds259855.mlab.com:59855/everything';
 var mongooseUri = uriUtil.formatMongoose(mongodbUri);
 var options = {
   server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
@@ -95,43 +96,45 @@ function verifyEmail(email) {
   return arr.toString();
 }
 
-function inviteEmail(email) {
-  let beenVerified = verifyEmail(email);
-  if (beenVerified != "") {
-    nodemailer.createTestAccount((err, account) => {
-      let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          user: 'idfkbob@gmail.com',
-          pass: 'ThisIsAPassword'
-        }
-      });
-      let mailOptions = {
-        from: '"Potluck 👻" <idfkbob@gmail.com>',
-        to: beenVerified,
-        subject: 'Hello ✔',
-        text: 'Hi there!',
-        html: '<body>' +
-          '<style>#bob{font-size: 50%;}</style>' +
-          "<p>You have received an invitation to join your friends on our app, Potluck! </p>" +
-          "<footer class=bob>Access our application at http://potluck-react.herokuapp.com ! Create an account, then join the list 'Blunderbuss' using the password '123' !</footer>" +
-          '</body>',
-        attachments: [{
-          filename: 'nyan cat ✔.gif',
-          path: './nyan.gif',
-          cid: 'nyan@example.com'
-        }]
-      };
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error)
-          return error;
-        }
-      });
+function confirmEmail(email, user, id) {
+  let url = "localhost:3000/users/" + user + "/" + id
+  nodemailer.createTestAccount((err, account) => {
+    let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: 'Runnautoemail@gmail.com',
+        pass: 'ThisIsASuperSecurePassword'
+      }
     });
-  }
+    let mailOptions = {
+      from: '"Runn 👻" <runnautoemail@gmail.com>',
+      to: email,
+      subject: 'Hello ✔',
+      text: 'Hi there!',
+      html: '<body>' +
+        '<style>#bob{font-size: 50%;}</style>' +
+        "<p>Hello, you recently signed up for Runn. All you need to do now is click the link below to confirm you're email account.</p>" +
+        "<p><a" + url + ">" + url + "</a></p>"+
+        "<p></p>"+
+        "<p>Please do not reply to this email.</p>"+
+        "<p>Didn't sign up? Just ignore this email. It was a one time thing anyway . . .</p>"+
+        '<footer>Also, here is a nyan cat . . . Just beacuse . . .</footer>' +
+        '',
+      attachments: [{
+        filename: 'nyan cat ✔.gif',
+        path: './nyan.gif',
+        cid: 'nyan@example.com'
+      }]
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error)
+        return error;
+      }
+    });
+  });
 }
 
 function sendThing() {
@@ -170,9 +173,10 @@ app.post("/signup", (req, res, next) => {
   user.lastName = req.body.lastName;
   user.email = req.body.email;
   user.password = req.body.password;
-  user.routes = [{created: []}, {ran: []}, {saved: []}];
-  user.stats = [{name: 'Mile'}, {name: '1k'}, {name: '3k'}, {name: '5k'}, {name: '10k'}, {name: '15k'}, {name: '20k'}, {name: 'Marathon'}];
-  user.info = [{verified: false}];
+  user.routes = [{ created: [] }, { ran: [] }, { saved: [] }];
+  user.stats = [{ name: 'Mile' }, { name: '1k' }, { name: '3k' }, { name: '5k' }, { name: '10k' }, { name: '15k' }, { name: '20k' }, { name: 'Marathon' }];
+  user.info = [{ verified: false }];
+  user.secretId = sha256(user.firstName + user.email);
   if (sanitize(user.firstName) != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
     User.findOne({
       email: user.email
@@ -194,8 +198,8 @@ app.post("/signup", (req, res, next) => {
               success: false
             });
           } else {
+            confirmEmail(userReturned.email, userReturned.firstName, user.secretId)
             res.json({
-              userReturned: userReturned,
               found: true,
               message: "Account created.",
               success: true
@@ -224,13 +228,13 @@ app.post('/login', function (req, res, next) {
           res.json({ found: true, success: false, message: err })
         } else {
           console.log('logged in')
-          res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n', info: user.info, stats: user.stats, routes: user.routes});
+          res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n', info: user.info, stats: user.stats, routes: user.routes });
         }
       })
     } else {
       res.json({ found: false, success: false, message: "Password and username don't match." })
     }
-  })(req, res, next);
+  });
   //Idk what these 2 lines are for. Found them and commented them out...lol
   // var email = req.body.email;
   // var password = req.body.password;
@@ -252,9 +256,26 @@ app.post('/getUser', (req, res, next) => {
         res.json(userFound)
       }
     });
-  }else{
-    res.json({message: 'No user logged in.'})
+  } else {
+    res.json({ message: 'No user logged in.' })
   }
+});
+
+app.post('/verify', (req, res, next)=>{
+  console.log('got here')
+  console.log(req.body.id)
+  User.findOneAndUpdate({secretId: req.body.id}, (err, userFound)=>{
+    console.log('got inside')
+    if(err){
+      console.log(err);
+      res.json({msg: "User not found", verified: false})
+      next(err)
+    }else{
+      userFound.info[0].verified = true;
+      console.log('user verified')
+      res.json({verified: true, msg: "You have been verified!"})
+    }
+  });
 });
 
 var port = process.env.PORT || 5000;
