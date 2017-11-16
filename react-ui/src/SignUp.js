@@ -14,6 +14,7 @@ var SignUp = observer(class SignUp extends Component {
     this.changeCallback = this.changeCallback.bind(this);
     this._handleKeyPress = this._handleKeyPress.bind(this);
     this.confirmPassword = this.confirmPassword.bind(this);
+    this.stuff = this.stuff.bind(this);
     this.state = {
       firstName: '',
       lastName: '',
@@ -43,9 +44,13 @@ var SignUp = observer(class SignUp extends Component {
     this.setState({ confirmPassword: event.target.value });
   }
 
+  stuff(){
+    this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email)
+  }
+
   _handleKeyPress(e) {
     if (e.key === "Enter") {
-      this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email);
+      this.stuff();
     }
   }
 
@@ -85,7 +90,7 @@ var SignUp = observer(class SignUp extends Component {
               <Label for="password">Confirm Password:</Label>{' '}
               <Input type="password" onChange={this.confirmPassword} value={this.state.confirmPassword} name="password" id="password" placeholder="abc123" onKeyPress={this._handleKeyPress} />
             </FormGroup>
-            <Button onClick={this._handleKeyPress}>Submit</Button>
+            <Button onClick={this.stuff}>Submit</Button>
           </CardBody>
         </Card>
       </div>

@@ -17,15 +17,15 @@ const nodemailer = require('nodemailer');
 const helmet = require('helmet');
 var http = require('http');
 var path = require('path');
+require('dotenv').config();
 
-
-var mongodbUri = 'mongodb://localhost/Users';
+var mongodbUri = 'mongodb://'+process.env.MLAB_USERNAME+':'+process.env.MLAB_PASSWORD+'@ds259855.mlab.com:59855/everything';
 var mongooseUri = uriUtil.formatMongoose(mongodbUri);
 var options = {
   server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
   replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
 };
-var allowedOrigins = "http://localhost:* http://127.0.0.1:* http://potluck-react.herokuapp.com:*";
+var allowedOrigins = "http://localhost:* http://127.0.0.1:*";
 var ioServer = io(server, {
   origins: allowedOrigins
 });
@@ -206,7 +206,7 @@ app.post("/signup", (req, res, next) => {
     });
   } else {
     res.json({
-      message: 'Due to ecurity issues, You can only input regular characters',
+      message: 'Due to security issues, You can only input regular characters',
       success: false
     })
   }
