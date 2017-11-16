@@ -17,7 +17,7 @@ const nodemailer = require('nodemailer');
 const helmet = require('helmet');
 var http = require('http');
 var path = require('path');
-require('dotenv').config();
+
 
 var mongodbUri = 'mongodb://localhost/Users';
 var mongooseUri = uriUtil.formatMongoose(mongodbUri);
