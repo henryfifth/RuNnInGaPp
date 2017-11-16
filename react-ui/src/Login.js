@@ -8,26 +8,31 @@ var Login = observer(class Login extends Component {
     super();
     this.inputemailChange = this.inputemailChange.bind(this);
     this.inputpasswordChange = this.inputpasswordChange.bind(this);
-    // this.testFunc = this.testFunc.bind(this);
+    this.redirect = this.redirect.bind(this);
+    this.login = this.login.bind(this);
     this._handleKeyPress = this._handleKeyPress.bind(this);
-    // this.submitLogin = this.submitLogin.bind(this);
-    // this.logOut = this.logOut.bind(this);
     this.state = {
       email: '',
       password: '',
       message: ''
     }
   }
-
+  redirect(url){
+    this.props.history.push(url);
+  }
   inputemailChange(event) {
     this.props.UserStore.user.email = event.target.value 
   }
   inputpasswordChange(event) {
     this.props.UserStore.user.password = event.target.value
   }
+  login(){
+    this.props.UserStore.submitLogin(this.props.UserStore.user.email, this.props.UserStore.user.password);
+    this.redirect('/profile')
+  }
   _handleKeyPress(e) {
     if (e.key === "Enter") {
-      this.props.UserStore.testFunc(this.props.UserStore.user.email, this.props.UserStore.user.password);
+      this.login();
     }
   }
   render() {
@@ -48,7 +53,7 @@ var Login = observer(class Login extends Component {
               <Input className='login-input' type="password" onChange={this.inputpasswordChange} name="password" id="password" onKeyPress={this._handleKeyPress} />
             </FormGroup>
             {' '}
-            <Button className="login-button" onClick={() => this.props.UserStore.testFunc(this.props.UserStore.user.email, this.props.UserStore.user.password)} >Submit</Button>
+            <Button className="login-button" onClick={() => this.login} >Submit</Button>
           </CardBody>
         </Card>
       </div>

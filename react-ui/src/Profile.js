@@ -1,20 +1,8 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 
 var Profile = observer(class Profile extends Component {
-  constructor() {
-    super();
-    this.state = {
-      initialized: false
-    }
-  }
-  componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        initialized: true
-      })
-    }, 2000)
-  }
   render() {
     if (this.props.UserStore.user.firstName) {
       var user = this.props.UserStore.user;
@@ -42,11 +30,7 @@ var Profile = observer(class Profile extends Component {
         </div>
       )
     } else {
-      if (this.props.UserStore.user.firstName === undefined && this.state.initialized) {
-        console.log(this.props.UserStore.user.firstName)
-        this.props.UserStore.redirect('/login');
-      }
-      return null
+      return <div>No User logged in</div>;
     }
   }
 });

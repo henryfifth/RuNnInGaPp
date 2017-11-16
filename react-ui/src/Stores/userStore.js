@@ -16,23 +16,6 @@ export default class UserStore {
     });
   }
 
-  redirect(url){
-    var john;
-    if(url.length < 1){
-      john = '/login';
-    }else{
-      john = url;
-    }
-    let bob = window.location.href
-    bob = bob.split('/');
-    bob.splice(-1, 1, john)
-    //change me to https later
-    bob.splice(0, 1, 'http:')
-    bob.splice(1, 0, '//');
-    bob = bob.join('');
-    window.location.href = bob;
-  }
-
   submitLogin(a, b) {
     return new Promise((resolve, reject) => {
       axios.post('/login', {
@@ -40,9 +23,8 @@ export default class UserStore {
         password: b,
       }).then((res) => {
         if (res.data.success) {
-          this.user = {
-            currentUser: res.data
-          }
+          this.user = res.data;
+          console.log(this.user)
         }
         resolve(res.data);
       });
@@ -50,20 +32,7 @@ export default class UserStore {
   }
 
   testFunc(a, b) {
-    this.submitLogin(a, b).then((user) => {
-      if (user.found) {
-        this.user = {
-          message: user.message
-        }
-        this.redirect('/profile')
-      } else {
-        this.user = {
-          message: user.message
-        }
-      }
-    }, (e) => {
-      console.log(e);
-    });
+    this.submitLogin(a, b);
   }
 
   logOut() {
@@ -72,7 +41,6 @@ export default class UserStore {
         this.user = {
           message: res.data.message
         }
-        console.log('logged out')
       });
     });
   }

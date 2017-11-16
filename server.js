@@ -223,6 +223,7 @@ app.post('/login', function (req, res, next) {
           next(err);
           res.json({ found: true, success: false, message: err })
         } else {
+          console.log('logged in')
           res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n', info: user.info, stats: user.stats, routes: user.routes});
         }
       })

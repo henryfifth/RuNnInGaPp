@@ -3,6 +3,7 @@ import { Button, Col, CardSubtitle, FormGroup, Label, Input, Card, CardBody, Car
 import './SignUp.css';
 import ReactPasswordStrength from 'react-password-strength';
 import {inject, observer} from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 var axios = require('axios');
 
 var SignUp = observer(class SignUp extends Component {
@@ -13,6 +14,7 @@ var SignUp = observer(class SignUp extends Component {
     this.inputemailChange = this.inputemailChange.bind(this);
     this.changeCallback = this.changeCallback.bind(this);
     this._handleKeyPress = this._handleKeyPress.bind(this);
+    this.redirect = this.redirect.bind(this);
     this.confirmPassword = this.confirmPassword.bind(this);
     this.stuff = this.stuff.bind(this);
     this.state = {
@@ -43,9 +45,13 @@ var SignUp = observer(class SignUp extends Component {
   confirmPassword(event) {
     this.setState({ confirmPassword: event.target.value });
   }
+  redirect(url){
+    this.props.history.push(url);
+  }
 
   stuff(){
-    this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email)
+    this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email);
+    this.redirect('/profile')
   }
 
   _handleKeyPress(e) {
@@ -98,4 +104,4 @@ var SignUp = observer(class SignUp extends Component {
   };
 })
 
-export default inject('UserStore')(SignUp);
+export default withRouter(inject('UserStore')(SignUp));

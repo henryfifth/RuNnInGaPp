@@ -17,6 +17,9 @@ import {Container, Segment} from 'semantic-ui-react';
 // var axios = require('axios');
 
 class App extends Component {
+  constructor(){
+    super();
+  }
   render() {
     return (
       <div>

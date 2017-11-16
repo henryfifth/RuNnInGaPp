@@ -1,11 +1,19 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 
 var Logout = observer(class Logout extends Component{
+  constructor(){
+    super();
+    this.redirect = this.redirect.bind(this);
+  }
+  redirect(url){
+    this.props.history.push(url);
+  }
   render(){
-    console.log('ready to log out')
+    console.log(this.props)
     this.props.UserStore.logOut();
-    this.props.UserStore.redirect('');
+    this.redirect('/login');
     return (
       <div>
         Logging Out . . .
@@ -14,4 +22,4 @@ var Logout = observer(class Logout extends Component{
   }
 });
 
-export default inject('UserStore')(Logout)
+export default withRouter(inject('UserStore')(Logout));
