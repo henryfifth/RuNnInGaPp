@@ -85,7 +85,7 @@ var SignUp = observer(class SignUp extends Component {
               <Label for="password">Confirm Password:</Label>{' '}
               <Input type="password" onChange={this.confirmPassword} value={this.state.confirmPassword} name="password" id="password" placeholder="abc123" onKeyPress={this._handleKeyPress} />
             </FormGroup>
-            <Button onClick={this.handleSignup}>Submit</Button>
+            <Button onClick={this._handleKeyPress}>Submit</Button>
           </CardBody>
         </Card>
       </div>

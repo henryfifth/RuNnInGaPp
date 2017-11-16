@@ -19,7 +19,7 @@ var Navbar = observer(class Navbar extends Component {
     let entryLinks = [];
 
     if (this.props.UserStore.user.firstName) {
-      entryLinks.push(<Link className="item" key='linkLogout' to="/logout">Logout</Link>);
+      entryLinks.push(<Link className='item' key='linkLogout' to='/logout'>Logout</Link>);
       entryLinks.push(<Link className='item' key='linkProfile' to='/profile'>Profile</Link>)
     } else {
       entryLinks.push(<Link className="item" key='linkLogin' to="/login">Login</Link>);

@@ -72,6 +72,7 @@ export default class UserStore {
         this.user = {
           message: res.data.message
         }
+        console.log('logged out')
       });
     });
   }
@@ -85,7 +86,6 @@ export default class UserStore {
           password: signupObj.password,
         }).then((userObj) => {
           this.user = userObj.data;
-          console.log(this.user)
           resolve();
         }
       );
@@ -101,7 +101,9 @@ export default class UserStore {
           email: e,
           password: p1,
         }).then((res) => {
-          
+          console.log('here')
+          console.log(this.user)
+          this.testFunc(e, p1)
         })
       })
     } else {

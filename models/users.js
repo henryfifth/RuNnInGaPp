@@ -9,5 +9,6 @@ var UserSchema = new mongoose.Schema({
   connections: {type: Array},
   stats: {type: Array },
   routes: {type: Array},
+  info: {type: Array},
 });
 module.exports = mongoose.model('User', UserSchema);

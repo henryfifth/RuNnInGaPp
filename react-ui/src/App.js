@@ -4,6 +4,7 @@ import SignUp from "./SignUp.js";
 import Login from './Login.js';
 import Homepage from './Homepage.js';
 import Profile from './Profile.js';
+import Logout from './Logout.js';
 import {
   BrowserRouter as Router,
   Route,
@@ -35,6 +36,7 @@ class App extends Component {
                 <Route path='/Profile' render={()=><Profile/>}/>
                 <Route path='/SignUp' render={()=><SignUp/>}/>
                 <Route path='/Login' render={()=><Login/>}/>
+                <Route path='/Logout' render={()=><Logout/>}/>
               </Container>
               <Footer/>
             </div>

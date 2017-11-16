@@ -170,8 +170,9 @@ app.post("/signup", (req, res, next) => {
   user.lastName = req.body.lastName;
   user.email = req.body.email;
   user.password = req.body.password;
-  user.routes = [{created: []}, {ran: []}, {saved: []}]
-  user.stats = [{name: 'Mile'}, {name: '1k'}, {name: '3k'}, {name: '5k'}, {name: '10k'}, {name: '15k'}, {name: '20k'}, {name: 'Marathon'}]
+  user.routes = [{created: []}, {ran: []}, {saved: []}];
+  user.stats = [{name: 'Mile'}, {name: '1k'}, {name: '3k'}, {name: '5k'}, {name: '10k'}, {name: '15k'}, {name: '20k'}, {name: 'Marathon'}];
+  user.info = [{verified: false}];
   if (sanitize(user.firstName) != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
     User.findOne({
       email: user.email
@@ -222,15 +223,16 @@ app.post('/login', function (req, res, next) {
           next(err);
           res.json({ found: true, success: false, message: err })
         } else {
-          res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n' })
+          res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n', info: user.info, stats: user.stats, routes: user.routes});
         }
       })
     } else {
       res.json({ found: false, success: false, message: "Password and username don't match." })
     }
   })(req, res, next);
-  var email = req.body.email;
-  var password = req.body.password;
+  //Idk what these 2 lines are for. Found them and commented them out...lol
+  // var email = req.body.email;
+  // var password = req.body.password;
 });
 
 app.post('/logout', (req, res) => {
