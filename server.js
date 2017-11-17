@@ -97,7 +97,7 @@ function verifyEmail(email) {
 }
 
 function confirmEmail(email, user, id) {
-  let url = "https://secure-ridge-79159/users/" + user + "/" + id
+  let url = "https://secure-ridge-79159.herokuapp.com/users/" + user + "/" + id
   nodemailer.createTestAccount((err, account) => {
     let transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
