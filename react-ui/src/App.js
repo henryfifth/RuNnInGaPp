@@ -38,7 +38,7 @@ class App extends Component {
                 <Route path='/signUp' render={()=><SignUp/>}/>
                 <Route path='/login' render={()=><Login/>}/>
                 <Route path='/logout' render={()=><Logout/>}/>
-                <Route path='/' render={()=><Verify/>}/>
+                <Route path='/users/' render={()=><Verify/>}/>
               </Container>
               <Footer/>
             </div>
