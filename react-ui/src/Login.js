@@ -53,7 +53,7 @@ var Login = observer(class Login extends Component {
               <Input className='login-input' type="password" onChange={this.inputpasswordChange} name="password" id="password" onKeyPress={this._handleKeyPress} />
             </FormGroup>
             {' '}
-            <Button className="login-button" onClick={() => this.login} >Submit</Button>
+            <Button className="login-button" onClick={this.login} >Submit</Button>
           </CardBody>
         </Card>
       </div>

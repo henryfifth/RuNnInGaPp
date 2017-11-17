@@ -40,7 +40,7 @@ db.once('open', function () {
 app.use(helmet())
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressSession({ secret: process.env.RUNNING_SECRET }));
+app.use(expressSession({ secret: 'hello loser!' }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('./react-ui/build'));
@@ -97,7 +97,7 @@ function verifyEmail(email) {
 }
 
 function confirmEmail(email, user, id) {
-  let url = "localhost:3000/users/" + user + "/" + id
+  let url = "https://secure-ridge-79159/users/" + user + "/" + id
   nodemailer.createTestAccount((err, account) => {
     let transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -116,10 +116,10 @@ function confirmEmail(email, user, id) {
       html: '<body>' +
         '<style>#bob{font-size: 50%;}</style>' +
         "<p>Hello, you recently signed up for Runn. All you need to do now is click the link below to confirm you're email account.</p>" +
-        "<p><a" + url + ">" + url + "</a></p>"+
-        "<p></p>"+
-        "<p>Please do not reply to this email.</p>"+
-        "<p>Didn't sign up? Just ignore this email. It was a one time thing anyway . . .</p>"+
+        "<p><a" + url + ">" + url + "</a></p>" +
+        "<p></p>" +
+        "<p>Please do not reply to this email.</p>" +
+        "<p>Didn't sign up? Just ignore this email. It was a one time thing anyway . . .</p>" +
         '<footer>Also, here is a nyan cat . . . Just beacuse . . .</footer>' +
         '',
       attachments: [{
@@ -175,7 +175,7 @@ app.post("/signup", (req, res, next) => {
   user.password = req.body.password;
   user.routes = [{ created: [] }, { ran: [] }, { saved: [] }];
   user.stats = [{ name: 'Mile' }, { name: '1k' }, { name: '3k' }, { name: '5k' }, { name: '10k' }, { name: '15k' }, { name: '20k' }, { name: 'Marathon' }];
-  user.info = [{ verified: false }];
+  user.info = false;
   user.secretId = sha256(user.firstName + user.email);
   if (sanitize(user.firstName) != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
     User.findOne({
@@ -219,6 +219,7 @@ app.post("/signup", (req, res, next) => {
 app.post('/login', function (req, res, next) {
   passport.authenticate('local', function (err, user) {
     if (err) {
+      console.log(err)
       res.json({ found: false, success: false, err: true, message: err });
     } else if (user) {
       req.logIn(user, (err) => {
@@ -227,15 +228,14 @@ app.post('/login', function (req, res, next) {
           next(err);
           res.json({ found: true, success: false, message: err })
         } else {
-          console.log('logged in')
           res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n', info: user.info, stats: user.stats, routes: user.routes });
         }
       })
     } else {
       res.json({ found: false, success: false, message: "Password and username don't match." })
     }
-  });
-  //Idk what these 2 lines are for. Found them and commented them out...lol
+  })(req, res, next);
+  //Not sure what these two lines are for, so I commented them out. Lol
   // var email = req.body.email;
   // var password = req.body.password;
 });
@@ -261,19 +261,22 @@ app.post('/getUser', (req, res, next) => {
   }
 });
 
-app.post('/verify', (req, res, next)=>{
+app.post('/verify', (req, res, next) => {
   console.log('got here')
   console.log(req.body.id)
-  User.findOneAndUpdate({secretId: req.body.id}, (err, userFound)=>{
+  User.find({ secretId: req.body.id }, (err, userFound) => {
     console.log('got inside')
-    if(err){
+    if (err) {
       console.log(err);
-      res.json({msg: "User not found", verified: false})
+      res.json({ msg: "User not found", verified: false })
       next(err)
-    }else{
-      userFound.info[0].verified = true;
+    } else {
+      console.log("here")
+      console.log(userFound)
+      console.log('split')
+      userFound.info = true;
       console.log('user verified')
-      res.json({verified: true, msg: "You have been verified!"})
+      res.json({ verified: true, msg: "You have been verified!" })
     }
   });
 });

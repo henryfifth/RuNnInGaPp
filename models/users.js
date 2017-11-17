@@ -9,7 +9,7 @@ var UserSchema = new mongoose.Schema({
   connections: {type: Array},
   stats: {type: Array },
   routes: {type: Array},
-  info: {type: Array},
+  info: Boolean,
   secretId: String,
 });
 module.exports = mongoose.model('User', UserSchema);

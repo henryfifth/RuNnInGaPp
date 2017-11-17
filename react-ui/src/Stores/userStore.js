@@ -24,7 +24,6 @@ export default class UserStore {
       }).then((res) => {
         if (res.data.success) {
           this.user = res.data;
-          console.log(this.user)
         }
         resolve(res.data);
       });
@@ -69,8 +68,6 @@ export default class UserStore {
           email: e,
           password: p1,
         }).then((res) => {
-          console.log('here')
-          console.log(this.user)
           this.testFunc(e, p1)
         })
       })
