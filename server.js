@@ -150,14 +150,14 @@ ioServer.on('connection', (client) => {
 function sanitize(input) {
   tim = input.toString();
   bob = input.split('');
-  badChar = ['(', ')', '<', '>', '{', '}', '/', ';', '*', '[', ']', '"', "'"];
+  badChar = ['(', ')', '<', '>', '{', '}', '/', ';', '*', '[', ']', '"', "'", '$'];
   bool = true
   bob.forEach((e, i) => {
     badChar.forEach((e2, i2) => {
       if (e === e2) {
         console.log('someone tried to put in some bad characters');
         console.log(input)
-        bool = false
+        bob.splice()
       }
     });
   });
@@ -174,10 +174,10 @@ app.post("/signup", (req, res, next) => {
   user.email = req.body.email;
   user.password = req.body.password;
   user.routes = [{ created: [] }, { ran: [] }, { saved: [] }];
-  user.stats = [{ name: 'Mile' }, { name: '1k' }, { name: '3k' }, { name: '5k' }, { name: '10k' }, { name: '15k' }, { name: '20k' }, { name: 'Marathon' }];
+user.stats = [];
   user.info = false;
   user.secretId = sha256(user.firstName + user.email);
-  if (sanitize(user.firstName) != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
+  if (user.firstName != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
     User.findOne({
       email: user.email
     }, (err, foundUser) => {
@@ -199,10 +199,17 @@ app.post("/signup", (req, res, next) => {
             });
           } else {
             confirmEmail(userReturned.email, userReturned.firstName, user.secretId)
+            console.log(userReturned)
             res.json({
               found: true,
               message: "Account created.",
-              success: true
+              success: true,
+              firstName: userReturned.firstName,
+              lastName: userReturned.lastName,
+              email: userReturned.email,
+              routes: userReturned.routes,
+              stats: userReturned.stats,
+              connections: userReturned.connections,
             });
           }
         });

@@ -34,7 +34,6 @@ class Verify extends Component {
         return null;
       }
     }, 2000);
-
   }
   render() {
     return null;

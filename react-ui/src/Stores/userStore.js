@@ -25,13 +25,10 @@ export default class UserStore {
         if (res.data.success) {
           this.user = res.data;
         }
+        this.user.shouldRedirect = true;
         resolve(res.data);
       });
     });
-  }
-
-  testFunc(a, b) {
-    this.submitLogin(a, b);
   }
 
   logOut() {
@@ -53,7 +50,9 @@ export default class UserStore {
           password: signupObj.password,
         }).then((userObj) => {
           this.user = userObj.data;
-          resolve();
+          if(this.user.success){
+            this.submitLogin(signupObj.email, signupObj.password);
+          }
         }
       );
     });
@@ -67,8 +66,7 @@ export default class UserStore {
           lastName: lN,
           email: e,
           password: p1,
-        }).then((res) => {
-          this.testFunc(e, p1)
+        }).then(() => {
         })
       })
     } else {

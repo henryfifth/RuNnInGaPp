@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { Button, Col, CardSubtitle, FormGroup, Label, Input, Card, CardBody, CardTitle } from 'reactstrap';
 import './SignUp.css';
 import ReactPasswordStrength from 'react-password-strength';
-import {inject, observer} from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-var axios = require('axios');
 
 var SignUp = observer(class SignUp extends Component {
   constructor() {
@@ -45,13 +44,17 @@ var SignUp = observer(class SignUp extends Component {
   confirmPassword(event) {
     this.setState({ confirmPassword: event.target.value });
   }
-  redirect(url){
+  redirect(url) {
     this.props.history.push(url);
   }
 
-  stuff(){
-    this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email);
-    this.redirect('/profile')
+  stuff() {
+    this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email)
+    setTimeout(() => {
+      if (this.props.UserStore.user.shouldRedirect) {
+        this.redirect('/profile');
+      }
+    }, 1000);
   }
 
   _handleKeyPress(e) {
@@ -67,7 +70,7 @@ var SignUp = observer(class SignUp extends Component {
         <Card className="signup-card" style={{ 'marginTop': '30px' }}>
           <CardBody>
             <CardTitle className="signup-title"> Sign Up</CardTitle>
-            {this.state.message}
+            <CardSubtitle className='signup-title' >{this.props.UserStore.user.message}</CardSubtitle>
             <FormGroup className="signup-input">
               <Label for="firstName">First Name:</Label>{' '}
               <Input type="text" onChange={this.inputfirstNameChange} value={this.state.firstName} name="firstName" id="firstName" placeholder="John" />
@@ -78,9 +81,8 @@ var SignUp = observer(class SignUp extends Component {
             </FormGroup>
             <FormGroup className="signup-input">
               <Label for="email">Email:</Label>{' '}
-              <Input type="email" onChange={this.inputemailChange} value={this.state.email} name="email" id="email" placeholder="you@something.com" />
-            </FormGroup>
-            {' '}
+              <Input type="email" onChange={this.inputemailChange} value={this.state.email} name="email" id="email" placeholder="you@example.com" />
+            </FormGroup>{' '}
             <FormGroup className="signup-input">
               <Label for="password">Password:</Label>{' '}
               <ReactPasswordStrength
