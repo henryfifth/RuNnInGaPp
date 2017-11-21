@@ -174,7 +174,7 @@ app.post("/signup", (req, res, next) => {
   user.email = req.body.email;
   user.password = req.body.password;
   user.routes = [{ created: [] }, { ran: [] }, { saved: [] }];
-user.stats = [];
+  user.stats = [];
   user.info = false;
   user.secretId = sha256(user.firstName + user.email);
   if (user.firstName != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
@@ -199,7 +199,6 @@ user.stats = [];
             });
           } else {
             confirmEmail(userReturned.email, userReturned.firstName, user.secretId)
-            console.log(userReturned)
             res.json({
               found: true,
               message: "Account created.",
@@ -235,7 +234,7 @@ app.post('/login', function (req, res, next) {
           next(err);
           res.json({ found: true, success: false, message: err })
         } else {
-          res.json({ found: true, success: true, firstName: user.firstName, lastName: user.lastName, message: 'U R l0gg3d 1n', info: user.info, stats: user.stats, routes: user.routes });
+          res.json({ found: true, success: true, user: user, message: 'U R l0gg3d 1n' });
         }
       })
     } else {
@@ -269,21 +268,41 @@ app.post('/getUser', (req, res, next) => {
 });
 
 app.post('/verify', (req, res, next) => {
-  console.log('got here')
-  console.log(req.body.id)
   User.find({ secretId: req.body.id }, (err, userFound) => {
-    console.log('got inside')
     if (err) {
       console.log(err);
       res.json({ msg: "User not found", verified: false })
       next(err)
     } else {
-      console.log("here")
-      console.log(userFound)
-      console.log('split')
       userFound.info = true;
-      console.log('user verified')
       res.json({ verified: true, msg: "You have been verified!" })
+    }
+  });
+});
+
+app.post('/addRun', (req, res, next) => {
+  User.findByIdAndUpdate({ _id: req.body.user._id }, "routes", (err, user) => {
+    if (err) {
+      console.log(err);
+    } else {
+      var d = new Date;
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      user.stats.push({ distance: req.body.distance, time: req.body.time, date: months[d.getMonth()] + " " + d.getDay() + ", " + d.getFullYear() })
+      user.save((error, userReturned) => {
+        if (error) {
+          console.log(error);
+          next(error);
+        } else {
+          User.findById({ _id: req.body.user._id }, (err, user) => {
+            if (err) {
+              console.log(err);
+              next(err);
+            } else {
+              res.json(user.stats)
+            }
+          });
+        }
+      });
     }
   });
 });

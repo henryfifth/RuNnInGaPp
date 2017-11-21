@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Col, Button, CardSubtitle, FormGroup, Label, Input, Card, CardBody, CardTitle } from 'reactstrap';
+var axios = require('axios');
+var that;
 
 var Profile = observer(class Profile extends Component {
   constructor() {
@@ -10,10 +12,12 @@ var Profile = observer(class Profile extends Component {
     this.addRun = this.addRun.bind(this);
     this.distanceChange = this.distanceChange.bind(this);
     this.timeChange = this.timeChange.bind(this);
+    this.runFunc = this.runFunc.bind(this);
     this.state = {
       show: false,
       distance: null,
       time: null,
+      msg: 'Congrats on going for a run!',
     }
   }
   addRun() {
@@ -26,22 +30,46 @@ var Profile = observer(class Profile extends Component {
     } else {
       return null;
     }
+    that = this;    
   }
   change() {
     this.setState({
-      show: true
+      show: !this.state.show
     })
+    that = this;    
   }
   distanceChange(event){
     this.setState({
       distance: event.target.value
     })
+    that = this;    
   }
   timeChange(event){
     this.setState({
       time: event.target.value
     })
+    that = this;    
   }
+  runFunc(){
+    if(this.state.distance !== null && this.state.time !== null){
+      axios.post('/addRun',{user: this.props.UserStore.user, distance: this.state.distance, time: this.state.time}).then( (res)=>{
+        console.log(res.data)
+        this.props.UserStore.user.stats.push(res.data)
+        console.log(this.props.UserStore.user.stats)
+      })
+    }else{
+    this.setState({
+      msg: 'You need to input a valid distance and time before submitting.'
+    })
+    }
+  }
+  _handleKeyPress(e) {
+    console.log(that)
+    if (e.key === "Enter") {
+      that.runFunc();
+    }
+  }
+
   render() {
     if (this.state.show) {
       var addRun = (
@@ -49,15 +77,15 @@ var Profile = observer(class Profile extends Component {
           <Col className='signup-col'></Col>
           <Card className='signup-card' style={{ 'marginTop': '30px' }}>
             <CardTitle className='signup-title' style={{ 'marginTop': '10px' }}>Run</CardTitle>
-            <CardSubtitle className='signup-title' >Congrats on going for a run!</CardSubtitle>
+            <CardSubtitle className='signup-title' >{this.state.msg}</CardSubtitle>
             <CardBody>
               <FormGroup className="login-input">
                 <Label>Distance</Label>{' '}
-                <Input onChange={this.distanceChange} className='login-input' type="email" placeholder="1 Mile, 1k, 2k, 5k, etc." />
+                <Input onChange={this.distanceChange} onKeyPress={this._handleKeyPress} className='login-input' type="email" placeholder="1 Mile, 1k, 2k, 5k, etc." />
               </FormGroup>{' '}
               <FormGroup className="login-input">
                 <Label for="password">Time</Label>{' '}
-                <Input className='login-input' placeholder='HH:MM:SS.MS' onChange={this.timeChange}/>
+                <Input className='login-input' placeholder='HH:MM:SS.MS' onChange={this.timeChange} onKeyPress={this._handleKeyPress}/>
               </FormGroup>{' '}
               <Button className="login-button" onClick={this.runFunc}>Submit</Button>
             </CardBody>
@@ -69,9 +97,10 @@ var Profile = observer(class Profile extends Component {
     }
     if (this.props.UserStore.user.firstName) {
       var user = this.props.UserStore.user;
+      console.log(user.stats)
       let stats = user.stats.map((e, i) => {
-        if (e.msg !== undefined) {
-          return <li>{e.msg}</li>
+        if (e.date !== undefined) {
+          return (<tr><td>Date: {e.date} Distance: {e.distance} Time: {e.time} Route: {e.route}</td></tr>)
         }
       })
       if(this.props.UserStore.user.stats.length <= 0){

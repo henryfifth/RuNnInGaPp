@@ -1,6 +1,6 @@
-var passwordHash = require("password-hash");
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+const passwordHash = require("password-hash");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 var UserSchema = new mongoose.Schema({
   firstName: {type: String, required: true},
   lastName: {type: String, required: true},
