@@ -1,37 +1,37 @@
-var express = require('express');
-var app = require("express")();
-var server = require('http').Server(app);
-var io = require('socket.io');
-let bodyParser = require("body-parser");
-var fetch = require('node-fetch');
-var expressSession = require("express-session");
-var passport = require("passport");
-var LocalStrategy = require("passport-local").Strategy;
-var passwordHash = require("password-hash");
-var mongoose = require('mongoose');
-var uriUtil = require('mongodb-uri');
-var User = require('./models/users.js');
+const express = require('express');
+const app = require("express")();
+const server = require('http').Server(app);
+const io = require('socket.io');
+const bodyParser = require("body-parser");
+const fetch = require('node-fetch');
+const expressSession = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const passwordHash = require("password-hash");
+const mongoose = require('mongoose');
+const uriUtil = require('mongodb-uri');
+const User = require('./models/users.js');
 const Route = require('./models/routes.js')
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer');
 const helmet = require('helmet');
-var http = require('http');
-var path = require('path');
-var sha256 = require('js-sha256');
+const http = require('http');
+const path = require('path');
+const sha256 = require('js-sha256');
 require('dotenv').config();
 
-var mongodbUri = 'mongodb://' + process.env.MLAB_USERNAME + ':' + process.env.MLAB_PASSWORD + '@ds259855.mlab.com:59855/everything';
-var mongooseUri = uriUtil.formatMongoose(mongodbUri);
-var options = {
+const mongodbUri = 'mongodb://' + process.env.MLAB_USERNAME + ':' + process.env.MLAB_PASSWORD + '@ds259855.mlab.com:59855/everything';
+const mongooseUri = uriUtil.formatMongoose(mongodbUri);
+const options = {
   server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
   replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
 };
-var allowedOrigins = "http://localhost:* http://127.0.0.1:*";
-var ioServer = io(server, {
+const allowedOrigins = "http://localhost:* http://127.0.0.1:*";
+const ioServer = io(server, {
   origins: allowedOrigins
 });
 mongoose.connect(mongooseUri, options);
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
   console.log('User database connected.');
@@ -285,7 +285,7 @@ app.post('/addRun', (req, res, next) => {
     if (err) {
       console.log(err);
     } else {
-      var d = new Date;
+      let d = new Date;
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
       user.stats.push({ distance: req.body.distance, time: req.body.time, date: months[d.getMonth()] + " " + d.getDay() + ", " + d.getFullYear() })
       user.save((error, userReturned) => {
@@ -307,7 +307,7 @@ app.post('/addRun', (req, res, next) => {
   });
 });
 
-var port = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log('listening on port ' + port);
 });
