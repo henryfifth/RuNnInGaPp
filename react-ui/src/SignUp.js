@@ -4,6 +4,7 @@ import './SignUp.css';
 import ReactPasswordStrength from 'react-password-strength';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import Routie from './Redirect';
 
 var SignUp = observer(class SignUp extends Component {
   constructor() {
@@ -13,7 +14,6 @@ var SignUp = observer(class SignUp extends Component {
     this.inputemailChange = this.inputemailChange.bind(this);
     this.changeCallback = this.changeCallback.bind(this);
     this._handleKeyPress = this._handleKeyPress.bind(this);
-    this.redirect = this.redirect.bind(this);
     this.confirmPassword = this.confirmPassword.bind(this);
     this.stuff = this.stuff.bind(this);
     this.state = {
@@ -44,15 +44,12 @@ var SignUp = observer(class SignUp extends Component {
   confirmPassword(event) {
     this.setState({ confirmPassword: event.target.value });
   }
-  redirect(url) {
-    this.props.history.push(url);
-  }
 
   stuff() {
     this.props.UserStore.handleSignup(this.state.password, this.state.confirmPassword, this.state.firstName, this.state.lastName, this.state.email)
     setTimeout(() => {
       if (this.props.UserStore.user.shouldRedirect) {
-        this.redirect('/profile');
+        return (<Routie url='/profile'/>)
       }
     }, 1000);
   }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Col, Button, CardSubtitle, FormGroup, Label, Input, Card, CardBody, CardTitle } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
-import {inject, observer} from 'mobx-react';
+import { inject, observer } from 'mobx-react';
+import Routie from './Redirect';
 
 var Login = observer(class Login extends Component {
   constructor() {
@@ -17,18 +18,25 @@ var Login = observer(class Login extends Component {
       message: ''
     }
   }
-  redirect(url){
+  redirect(url) {
     this.props.history.push(url);
   }
   inputemailChange(event) {
-    this.props.UserStore.user.email = event.target.value 
+    this.props.UserStore.user.email = event.target.value
   }
   inputpasswordChange(event) {
     this.props.UserStore.user.password = event.target.value
   }
-  login(){
-    this.props.UserStore.submitLogin(this.props.UserStore.user.email, this.props.UserStore.user.password);
-    this.redirect('/profile')
+  login() {
+    return new Promise((resolve, reject) => {
+        this.props.UserStore.submitLogin(this.props.UserStore.user.email, this.props.UserStore.user.password)
+      .then(() => {
+        console.log('logged in')
+        if(this.props.UserStore.user.shouldRedirect){
+          this.redirect('/profile')
+        }
+      })
+    })
   }
   _handleKeyPress(e) {
     if (e.key === "Enter") {
@@ -40,7 +48,7 @@ var Login = observer(class Login extends Component {
       <div>
         <Col className='signup-col'></Col>
         <Card className='signup-card' style={{ 'marginTop': '30px' }}>
-          <CardTitle className='signup-title' style={{'marginTop': '10px'}}>Login</CardTitle>
+          <CardTitle className='signup-title' style={{ 'marginTop': '10px' }}>Login</CardTitle>
           <CardSubtitle className='signup-title' style={{ color: 'red' }}>{this.props.UserStore.user.message}</CardSubtitle>
           <CardBody>
             <FormGroup className="login-input">

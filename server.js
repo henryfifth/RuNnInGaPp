@@ -105,6 +105,15 @@ function confirmEmail(email, user, id) {
       secure: false, // true for 465, false for other ports
       auth: {
         user: 'Runnautoemail@gmail.com',
+/*
+_________   ___ ___    _____    _______    ___________________     _____  ___________
+\_   ___ \ /   |   \  /  _  \   \      \  /  _____/\_   _____/    /     \ \_   _____/
+/    \  \//    ~    \/  /_\  \  /   |   \/   \  ___ |    __)_    /  \ /  \ |    __)_ 
+\     \___\    Y    /    |    \/    |    \    \_\  \|        \  /    Y    \|        \
+ \______  /\___|_  /\____|__  /\____|__  /\______  /_______  /  \____|__  /_______  /
+        \/       \/         \/         \/        \/        \/           \/        \/
+before you put this app into production
+*/
         pass: 'ThisIsASuperSecurePassword'
       }
     });

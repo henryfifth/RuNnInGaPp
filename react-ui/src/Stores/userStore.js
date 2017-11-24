@@ -5,7 +5,7 @@ export default class UserStore {
   constructor() {
     extendObservable(this, {
       user: {
-        message: ''
+        message: '',
       },
       get retrieveUser() {
         return this.user
@@ -23,7 +23,7 @@ export default class UserStore {
         password: b,
       }).then((res) => {
         if (res.data.success) {
-          this.user = res.data;
+          this.user = res.data.user;
         }
         this.user.shouldRedirect = true;
         resolve(res.data);

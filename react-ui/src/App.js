@@ -9,12 +9,14 @@ import Verify from './Verify.js';
 import {
   BrowserRouter as Router,
   Route,
+  Switch,
 } from 'react-router-dom';
 import { Provider } from "mobx-react";
 import UserStore from "./Stores/userStore";
 import Navbar from './Navbar/Navbar';
 import Footer from './Footer/Footer';
-import {Container, Segment} from 'semantic-ui-react';
+import NotFoundRoute from './NotFoundRoute.js';
+import { Container, Segment } from 'semantic-ui-react';
 var axios = require('axios');
 
 class App extends Component {
@@ -24,23 +26,26 @@ class App extends Component {
         <Provider UserStore={new UserStore()}>
           <Router>
             <div className='bg'>
-            <Segment
-            inverted
-            textAlign='center'
-            style={{ padding: '1em 0em' }}
-            vertical
-          >
-              <Navbar/>
+              <Segment
+                inverted
+                textAlign='center'
+                style={{ padding: '1em 0em' }}
+                vertical
+              >
+                <Navbar />
               </Segment>
-                <Route exact path='/' render={()=><Homepage/>}/>
+              <Route exact path='/' render={() => <Homepage />} />
+              <Verify />
               <Container>
-                <Route path='/profile' render={()=><Profile/>}/>
-                <Route path='/signUp' render={()=><SignUp/>}/>
-                <Route path='/login' render={()=><Login/>}/>
-                <Route path='/logout' render={()=><Logout/>}/>
-                <Route path='/users/' render={()=><Verify/>}/>
+                <Switch>
+                <Route path='/profile' render={() => <Profile />} />
+                <Route path='/signUp' render={() => <SignUp />} />
+                <Route path='/login' render={() => <Login />} />
+                <Route path='/logout' render={() => <Logout />} />
+                <Route render={()=> <NotFoundRoute />} />
+                </Switch>
               </Container>
-              <Footer/>
+              <Footer />
             </div>
           </Router>
         </Provider>
