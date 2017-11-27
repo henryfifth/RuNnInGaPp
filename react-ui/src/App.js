@@ -17,7 +17,6 @@ import Navbar from './Navbar/Navbar';
 import Footer from './Footer/Footer';
 import NotFoundRoute from './NotFoundRoute.js';
 import { Container, Segment } from 'semantic-ui-react';
-var axios = require('axios');
 
 class App extends Component {
   render() {

@@ -1,11 +1,13 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var RouteSchema = new mongoose.Schema({
-  coords: {type: Array, required: true},
+  start: String,
+  end: String,
+  waypoints: Array,
   popularity: Number,
   created: Date,
-  createdBy: {type: String},
+  createdBy: {type: Array},
   private: {type: Boolean, required: true},
-  nick: String,
+  name: String,
 });
 module.exports = mongoose.model('Route', RouteSchema);

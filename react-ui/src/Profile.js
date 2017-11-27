@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
 import { Col, Button, CardSubtitle, FormGroup, Label, Input, Card, CardBody, CardTitle } from 'reactstrap';
+import Map from './Map.js';
 var axios = require('axios');
 var that;
 
@@ -31,7 +31,6 @@ var Profile = observer(class Profile extends Component {
     } else {
       return null;
     }
-    that = this;
   }
   change() {
     this.setState({
@@ -105,18 +104,20 @@ var Profile = observer(class Profile extends Component {
         </div>
       );
     } else {
-      var addRun = null
+      addRun = null
     }
     if (this.state.initialized) {
       if (this.props.UserStore.user.firstName) {
         var user = this.props.UserStore.user;
         let stats = user.stats.map((e, i) => {
           if (e.date !== undefined) {
-            return (<tr><td>Date: {e.date} Distance: {e.distance} Time: {e.time} Route: {e.route}</td></tr>)
+            return (<tr key={i}><td>Date: {e.date} Distance: {e.distance} Time: {e.time} Route: {e.route}</td></tr>)
+          }else{
+            return null;
           }
         })
         if (this.props.UserStore.user.stats.length <= 0) {
-          stats.push(<tr><td>You have no stats yet. Why don't you go for a run?</td></tr>);
+          stats.push(<tr key='0'><td>You have no stats yet. Why don't you go for a run?</td></tr>);
         }
         return (
           <div>
@@ -135,6 +136,9 @@ var Profile = observer(class Profile extends Component {
             <br></br>
             <Button onClick={this.change}>Add a run</Button>
             {addRun}
+            <br></br>
+            <br></br>
+            <Map />
           </div>
         )
       } else {

@@ -3,14 +3,9 @@ import {
   Button,
   Container,
   Divider,
-  Grid,
   Header,
   Icon,
-  Image,
-  List,
-  Menu,
   Segment,
-  Visibility,
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom'
 

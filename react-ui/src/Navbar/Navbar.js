@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { Image } from 'semantic-ui-react';
 import { inject, observer } from 'mobx-react';
 
 var Navbar = observer(class Navbar extends Component {
@@ -15,7 +14,6 @@ var Navbar = observer(class Navbar extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   render() {
-    const { activeItem } = this.state;
     let entryLinks = [];
 
     if (this.props.UserStore.user.firstName) {
