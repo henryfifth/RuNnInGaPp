@@ -5,6 +5,7 @@ export default class NotFoundRoute extends Component {
     return (
       <div>
         <h1>Arrgghh Matey! The Url ye requested ain't heeeerrrre</h1>
+        <img src='./PaintythePirate.jpg'/>
       </div>
     )
   }

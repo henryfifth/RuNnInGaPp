@@ -34,17 +34,19 @@ class App extends Component {
               >
                 <Navbar />
               </Segment>
-              <Route exact path='/' render={() => <Homepage />} />
               <Verify />
-              <Container>
-                <Switch>
-                <Route path='/profile' render={() => <Profile />} />
-                <Route path='/signUp' render={() => <SignUp />} />
-                <Route path='/login' render={() => <Login />} />
-                <Route path='/logout' render={() => <Logout />} />
-                <Route path='*' render={()=> <NotFoundRoute />} />
-                </Switch>
-              </Container>
+              <Switch>
+                <Route exact path='/' render={() => <Homepage />} />
+                <Container>
+                  <Switch>
+                    <Route path='/profile' render={() => <Profile />} />
+                    <Route path='/signUp' render={() => <SignUp />} />
+                    <Route path='/login' render={() => <Login />} />
+                    <Route path='/logout' render={() => <Logout />} />
+                    <Route render={() => <NotFoundRoute />} />
+                  </Switch>
+                </Container>
+              </Switch>
               <Footer />
             </div>
           </Router>
