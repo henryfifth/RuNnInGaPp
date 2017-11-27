@@ -44,6 +44,10 @@ app.use(expressSession({ secret: 'hello loser!' }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('./react-ui/build'));
+app.get('*', function (request, response){
+  response.sendFile(path.resolve(__dirname, './react-ui/build', 'index.html'))
+})
+
 
 passport.use(new LocalStrategy({ username: "email", password: "password" }, (email, password, done) => {
   User.findOne({
@@ -127,8 +131,9 @@ before you put this app into production
         "<p>Hello, you recently signed up for Runn. All you need to do now is click the link below to confirm you're email account.</p>" +
         "<p><a" + url + ">" + url + "</a></p>" +
         "<p></p>" +
+        "<p>Didn't sign up? Just ignore this email.</p>" +
+        "<p></p>" +
         "<p>Please do not reply to this email.</p>" +
-        "<p>Didn't sign up? Just ignore this email. It was a one time thing anyway . . .</p>" +
         '<footer>Also, here is a nyan cat . . . Just beacuse . . .</footer>' +
         '',
       attachments: [{
@@ -176,6 +181,7 @@ function sanitize(input) {
     return false
   }
 }
+
 app.post("/signup", (req, res, next) => {
   var user = new User();
   user.firstName = req.body.firstName;

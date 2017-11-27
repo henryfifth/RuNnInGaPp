@@ -10,7 +10,7 @@ var Logout = observer(class Logout extends Component{
     return (
       <div>
         Logging Out . . .
-        <Routie url='/login'/>
+        <Routie url='/#/login'/>
       </div>
     )
   }
