@@ -42,7 +42,7 @@ class App extends Component {
                 <Route path='/signUp' render={() => <SignUp />} />
                 <Route path='/login' render={() => <Login />} />
                 <Route path='/logout' render={() => <Logout />} />
-                <Route render={()=> <NotFoundRoute />} />
+                <Route path='*' render={()=> <NotFoundRoute />} />
                 </Switch>
               </Container>
               <Footer />
