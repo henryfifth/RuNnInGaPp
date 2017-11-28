@@ -7,12 +7,23 @@ export default class UserStore {
       user: {
         message: '',
       },
+      routes: {
+
+      },
       get retrieveUser() {
         return this.user
       }
     });
     axios.post('/getUser').then((data) =>{
       this.user = data.data
+    });
+  }
+
+  getRoutes(){
+    axios.post('/getRoutes').then((res) => {
+      if (res.data.success) {
+        this.routes = res.data.routes;
+      }
     });
   }
 

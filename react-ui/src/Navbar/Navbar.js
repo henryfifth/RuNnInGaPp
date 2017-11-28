@@ -29,7 +29,7 @@ var Navbar = observer(class Navbar extends Component {
         <Menu inverted pointing secondary size='large'>
           <Link className="item" to="/"> Running App
           </Link>
-          <Link className="item" to="/#/about">About</Link>
+          <Link className="item" to="/about">About</Link>
           <Menu.Menu position='right'>
             {/* show user dashboard & logout */}
             {entryLinks}

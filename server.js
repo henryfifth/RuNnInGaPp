@@ -44,10 +44,9 @@ app.use(expressSession({ secret: 'hello loser!' }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('./react-ui/build'));
-app.get('*', function (request, response){
+app.get('*', function (request, response) {
   response.sendFile(path.resolve(__dirname, './react-ui/build', 'index.html'))
-})
-
+});
 
 passport.use(new LocalStrategy({ username: "email", password: "password" }, (email, password, done) => {
   User.findOne({
@@ -65,13 +64,12 @@ passport.use(new LocalStrategy({ username: "email", password: "password" }, (ema
         return done("password and username don't match", null);
       }
     }
-  })
-})
-)
+  });
+}));
 
 passport.serializeUser(function (user, done) {
   done(null, user._id);
-})
+});
 
 passport.deserializeUser(function (id, done) {
   User.findById(id, function (err, user) {
@@ -80,8 +78,8 @@ passport.deserializeUser(function (id, done) {
     } else {
       done(null, user);
     }
-  })
-})
+  });
+});
 
 function verifyEmail(email) {
   let emailReplaced = email.replace(/ /g, '');
@@ -109,15 +107,15 @@ function confirmEmail(email, user, id) {
       secure: false, // true for 465, false for other ports
       auth: {
         user: 'Runnautoemail@gmail.com',
-/*
-_________   ___ ___    _____    _______    ___________________     _____  ___________
-\_   ___ \ /   |   \  /  _  \   \      \  /  _____/\_   _____/    /     \ \_   _____/
-/    \  \//    ~    \/  /_\  \  /   |   \/   \  ___ |    __)_    /  \ /  \ |    __)_ 
-\     \___\    Y    /    |    \/    |    \    \_\  \|        \  /    Y    \|        \
- \______  /\___|_  /\____|__  /\____|__  /\______  /_______  /  \____|__  /_______  /
-        \/       \/         \/         \/        \/        \/           \/        \/
-before you put this app into production
-*/
+        /*
+        _________   ___ ___    _____    _______    ___________________     _____  ___________
+        \_   ___ \ /   |   \  /  _  \   \      \  /  _____/\_   _____/    /     \ \_   _____/
+        /    \  \//    ~    \/  /_\  \  /   |   \/   \  ___ |    __)_    /  \ /  \ |    __)_ 
+        \     \___\    Y    /    |    \/    |    \    \_\  \|        \  /    Y    \|        \
+         \______  /\___|_  /\____|__  /\____|__  /\______  /_______  /  \____|__  /_______  /
+                \/       \/         \/         \/        \/        \/           \/        \/
+        before you put this app into production
+        */
         pass: 'ThisIsASuperSecurePassword'
       }
     });
@@ -172,14 +170,11 @@ function sanitize(input) {
         console.log('someone tried to put in some bad characters');
         console.log(input)
         bob.splice()
+        bool = false
       }
     });
   });
-  if (bool) {
-    return input
-  } else {
-    return false
-  }
+  return bool
 }
 
 app.post("/signup", (req, res, next) => {
@@ -320,6 +315,39 @@ app.post('/addRun', (req, res, next) => {
       });
     }
   });
+});
+
+app.post('/getRoutes', (req, res, next) => {
+  if (req.session.passport) {
+    User.findById(req.session.passport.user, (err, userFound) => {
+      let routesToFind = [];
+      let routes = [];
+      userFound.routes[0].created.forEach((e, i)=>{
+        routesToFind.push(e.id);
+      });
+      userFound.routes[1].ran.forEach((e, i)=>{
+        routesToFind.push(e.id);
+      });
+      userFound.routes[2].saved.forEach((e, i)=>{
+        routesToFind.push(e.id);
+      });
+      if(routesToFind.length > 0){
+        routesToFind.forEach((e, i)=>{
+          Route.findById(e, (err, routeFound)=>{
+            if(err)
+              console.log(err);
+            else
+              routes.push(routeFound);
+          });
+        });
+        console.log('SPLIT');
+        console.log(routes)
+        res.json(routes);
+      }else{
+        res.json("No routes to find.");
+      }
+    });
+  }
 });
 
 const port = process.env.PORT || 5000;
