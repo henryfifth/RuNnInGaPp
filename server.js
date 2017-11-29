@@ -82,6 +82,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 function verifyEmail(email) {
+  console.log(email)
   let emailReplaced = email.replace(/ /g, '');
   let emailSplit = emailReplaced.split(',');
   let arr = [];
@@ -163,7 +164,7 @@ function sanitize(input) {
   tim = input.toString();
   bob = input.split('');
   badChar = ['(', ')', '<', '>', '{', '}', '/', ';', '*', '[', ']', '"', "'", '$'];
-  bool = true
+  bool = input
   bob.forEach((e, i) => {
     badChar.forEach((e2, i2) => {
       if (e === e2) {
@@ -183,7 +184,7 @@ app.post("/signup", (req, res, next) => {
   user.lastName = req.body.lastName;
   user.email = req.body.email;
   user.password = req.body.password;
-  user.routes = [{ created: [] }, { ran: [] }, { saved: [] }];
+  user.routes = {created: [], ran: [], saved: []};
   user.stats = [];
   user.info = false;
   user.secretId = sha256(user.firstName + user.email);
@@ -205,7 +206,7 @@ app.post("/signup", (req, res, next) => {
             res.json({
               found: true,
               message: 'An account is already associated with that email address.',
-              success: false
+              success: false,
             });
           } else {
             confirmEmail(userReturned.email, userReturned.firstName, user.secretId)
@@ -322,13 +323,13 @@ app.post('/getRoutes', (req, res, next) => {
     User.findById(req.session.passport.user, (err, userFound) => {
       let routesToFind = [];
       let routes = [];
-      userFound.routes[0].created.forEach((e, i)=>{
+      userFound.routes.created.forEach((e, i)=>{
         routesToFind.push(e.id);
       });
-      userFound.routes[1].ran.forEach((e, i)=>{
+      userFound.routes.ran.forEach((e, i)=>{
         routesToFind.push(e.id);
       });
-      userFound.routes[2].saved.forEach((e, i)=>{
+      userFound.routes.saved.forEach((e, i)=>{
         routesToFind.push(e.id);
       });
       if(routesToFind.length > 0){
@@ -340,8 +341,17 @@ app.post('/getRoutes', (req, res, next) => {
               routes.push(routeFound);
           });
         });
-        console.log('SPLIT');
-        console.log(routes)
+        Route.find({lat : {$gte: maxLat, $lt: minLat}, long: {$gte: maxLong, $lt: minLong}}, (error, routesFound)=>{
+          // LOL
+          if(error)
+            console.log(error);
+          else{
+            console.log(routesFound);
+            routes.push(routesFound);
+          }
+        });
+        console.log("SPLIT!")
+        console.log(routes);
         res.json(routes);
       }else{
         res.json("No routes to find.");

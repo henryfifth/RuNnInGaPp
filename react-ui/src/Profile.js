@@ -122,7 +122,7 @@ var Profile = observer(class Profile extends Component {
         return (
           <div>
             <p>Hello, {this.props.UserStore.user.firstName}</p>
-            <p>You have {user.routes[0].created.length} routes created, {user.routes[1].ran.length} routes ran, and {user.routes[2].saved.length} routes saved</p>
+            <p>You have {user.routes.created.length} routes created, {user.routes.ran.length} routes ran, and {user.routes.saved.length} routes saved</p>
             <table border='1'>
               <tbody>
                 <tr>

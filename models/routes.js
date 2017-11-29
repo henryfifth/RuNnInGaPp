@@ -5,6 +5,8 @@ var RouteSchema = new mongoose.Schema({
   end: Array,
   waypoints: Array,
   popularity: Number,
+  distance: Number,
+  altitude: Number,
   created: Date,
   createdBy: {type: Array},
   private: {type: Boolean, required: true},

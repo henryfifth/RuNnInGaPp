@@ -8,7 +8,11 @@ var UserSchema = new mongoose.Schema({
   password: {type: String, required: true, set: function(password){return passwordHash.generate(password)}},
   connections: {type: Array},
   stats: {type: Array },
-  routes: {type: Array},
+  routes: {
+    created: Array,
+    ran: Array,
+    saved: Array,
+  },
   info: Boolean,
   secretId: String,
 });
