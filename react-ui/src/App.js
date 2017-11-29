@@ -21,18 +21,18 @@ import { Container, Segment } from 'semantic-ui-react';
 class App extends Component {
   render() {
     return (
-      <div>
-        <Provider UserStore={new UserStore()}>
-          <Router>
-            <div className='bg'>
-              <Segment
-                inverted
-                textAlign='center'
-                style={{ padding: '1em 0em' }}
-                vertical
-              >
-                <Navbar />
-              </Segment>
+      <Provider UserStore={new UserStore()}>
+        <Router>
+          <div style={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }} className='bg'>
+            <Segment
+              inverted
+              textAlign='center'
+              style={{ padding: '1em 0em' }}
+              vertical
+            >
+              <Navbar />
+            </Segment>
+            <div style={{ flex: 1 }}>
               <Verify />
               <Switch>
                 <Route exact path='/' render={() => <Homepage />} />
@@ -46,11 +46,11 @@ class App extends Component {
                   </Switch>
                 </Container>
               </Switch>
-              <Footer />
             </div>
-          </Router>
-        </Provider>
-      </div>
+            <Footer />
+          </div>
+        </Router>
+      </Provider>
     )
   }
 }
