@@ -18,7 +18,6 @@ import Footer from './Footer/Footer';
 import NotFoundRoute from './NotFoundRoute.js';
 import AddRoute from './AddRoute';
 import { Container, Segment } from 'semantic-ui-react';
-import MapWithASearchBox from './Hello.js'
 
 class App extends Component {
   render() {
@@ -45,7 +44,6 @@ class App extends Component {
                     <Route path='/login' render={() => <Login />} />
                     <Route path='/logout' render={() => <Logout />} />
                     <Route path='/addRoute' render={()=><AddRoute />} />
-                    <Route path='/hello' render={()=><MapWithASearchBox />} />
                     <Route render={() => <NotFoundRoute />} />
                   </Switch>
                 </Container>
