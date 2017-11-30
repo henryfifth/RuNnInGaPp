@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Col, Button, CardSubtitle, FormGroup, Label, Input, Card, CardBody, CardTitle } from 'reactstrap';
 import Map from './Map.js';
+import Routie from './Redirect'
 var axios = require('axios');
 var that;
 
@@ -13,12 +14,14 @@ var Profile = observer(class Profile extends Component {
     this.distanceChange = this.distanceChange.bind(this);
     this.timeChange = this.timeChange.bind(this);
     this.runFunc = this.runFunc.bind(this);
+    this.goToAdd = this.goToAdd.bind(this);
     this.state = {
       show: false,
       distance: null,
       time: null,
       msg: 'Congrats on going for a run!',
       initialized: false,
+      shouldRedirect: false,
     }
   }
   addRun() {
@@ -61,6 +64,11 @@ var Profile = observer(class Profile extends Component {
       })
     }
   }
+  goToAdd(){
+    this.setState({
+      shouldRedirect: true,
+    })
+  }
   _handleKeyPress(e) {
     if (e.key === "Enter") {
       that.runFunc();
@@ -82,6 +90,11 @@ var Profile = observer(class Profile extends Component {
   }
 
   render() {
+    if(this.state.shouldRedirect){
+      var shouldRedirect = <Routie url='/addRoute' />;
+    }else{
+      var shouldRedirect = null;
+    }
     if (this.state.show) {
       var addRun = (
         <div>
@@ -135,10 +148,12 @@ var Profile = observer(class Profile extends Component {
             </table>
             <br></br>
             <Button onClick={this.change}>Add a run</Button>
+            <Button onClick={this.goToAdd}>Add a route</Button>
+            {shouldRedirect}
             {addRun}
             <br></br>
             <br></br>
-            <Map />
+            <Map zoom={15} height={400}/>
           </div>
         )
       } else {

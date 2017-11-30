@@ -4,18 +4,8 @@ import Bananas from './Hello';
 import Howdy from './Howdy';
 import ButtonBasics from './third';
 import {
-  Scene,
-  Router,
-  Actions,
-  Reducer,
-  ActionConst,
-  Overlay,
-  Tabs,
-  Modal,
-  Drawer,
-  Stack,
-  Lightbox,
-} from 'react-native-router-flux';
+  StackNavigator,
+} from 'react-navigation';
 
 export default class App extends React.Component {
   render() {

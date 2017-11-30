@@ -1,5 +1,12 @@
 import { extendObservable } from "mobx";
 var axios = require('axios');
+let lat = 45.0145;
+let lng = -74.8015;
+function showPosition(position) {
+  lat = position.coords.latitude;
+  lng = position.coords.longitude;
+}
+navigator.geolocation.getCurrentPosition(showPosition)
 
 export default class UserStore {
   constructor() {
@@ -7,9 +14,7 @@ export default class UserStore {
       user: {
         message: '',
       },
-      routes: {
-
-      },
+      routes: [],
       get retrieveUser() {
         return this.user
       }
@@ -19,8 +24,18 @@ export default class UserStore {
     });
   }
 
+  getLat(){
+    this.user.lat = lat;
+    return lat;
+  }
+
+  getLng(){
+    this.user.lng = lng;
+    return lng;
+  }
+
   getRoutes(){
-    axios.post('/getRoutes').then((res) => {
+    axios.post('/getRoutes', {}).then((res) => {
       if (res.data.success) {
         this.routes = res.data.routes;
       }

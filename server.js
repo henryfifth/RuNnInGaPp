@@ -342,13 +342,10 @@ app.post('/getRoutes', (req, res, next) => {
           });
         });
         Route.find({lat : {$gte: maxLat, $lt: minLat}, long: {$gte: maxLong, $lt: minLong}}, (error, routesFound)=>{
-          // LOL
           if(error)
             console.log(error);
-          else{
-            console.log(routesFound);
+          else
             routes.push(routesFound);
-          }
         });
         console.log("SPLIT!")
         console.log(routes);
