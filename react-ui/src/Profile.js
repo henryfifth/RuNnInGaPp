@@ -15,6 +15,7 @@ var Profile = observer(class Profile extends Component {
     this.timeChange = this.timeChange.bind(this);
     this.runFunc = this.runFunc.bind(this);
     this.goToAdd = this.goToAdd.bind(this);
+    this.getIp = this.getIp.bind(this);
     this.state = {
       show: false,
       distance: null,
@@ -89,6 +90,12 @@ var Profile = observer(class Profile extends Component {
     }
   }
 
+  getIp(){
+    axios.post('/addRoute').then((res)=>{
+      console.log(res)
+    })
+  }
+
   render() {
     if(this.state.shouldRedirect){
       var shouldRedirect = <Routie url='/addRoute' />;
@@ -149,6 +156,7 @@ var Profile = observer(class Profile extends Component {
             <br></br>
             <Button onClick={this.change}>Add a run</Button>
             <Button onClick={this.goToAdd}>Add a route</Button>
+            <Button onClick={this.getIp}>Get Ip</Button>
             {shouldRedirect}
             {addRun}
             <br></br>

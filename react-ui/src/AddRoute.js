@@ -11,7 +11,8 @@ var AddRoute = observer(class AddRoute extends Component {
         <br></br>
         <br></br>
         <br></br>
-        <Map zoom={15} height={600}/>
+        <p>Unfortunately, you cannot add routes manually yet. You have to go for a run.</p>
+        <Map zoom={15}/>
       </div>
     );
   }

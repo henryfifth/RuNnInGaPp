@@ -1,7 +1,7 @@
 import { extendObservable } from "mobx";
 var axios = require('axios');
-let lat = 45.0145;
-let lng = -74.8015;
+let lat = null;
+let lng = null;
 function showPosition(position) {
   lat = position.coords.latitude;
   lng = position.coords.longitude;
@@ -81,6 +81,14 @@ export default class UserStore {
           }
         }
       );
+    });
+  }
+
+  addRoute(){
+    axios.post('/addRoute', {
+      //add your stuff here
+    }).then((res)=>{
+      //do the stuff here
     });
   }
 

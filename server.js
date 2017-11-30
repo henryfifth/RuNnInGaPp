@@ -357,6 +357,11 @@ app.post('/getRoutes', (req, res, next) => {
   }
 });
 
+app.post('/addRoute', (req, res, next)=>{
+  console.log(req.connection.remoteAddress);
+  res.json(req.connection.remoteAddress)
+});
+
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log('listening on port ' + port);
