@@ -1,36 +1,28 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Bananas from './Hello';
-import Howdy from './Howdy';
-import ButtonBasics from './third';
 import {
   StackNavigator,
 } from 'react-navigation';
+import React, {Component} from 'react';
+import Home from './Screens/Home';
+import SignUp from './Screens/SignUp';
+import Login from './Screens/Login';
+import Profile from './Screens/Profile';
+import {Provider} from 'mobx-react/native';
+import UserStore from './Stores/userStore';
 
-export default class App extends React.Component {
-  render() {
+const Pages = StackNavigator({
+  Home: { screen: Home },
+  SignUp: {screen: SignUp},
+  Login: {screen: Login},
+  Profile: {screen: Profile},
+});
+
+
+export default class App extends Component{
+  render(){
     return (
-    <Router>
-      <Stack key="root">
-        {/* <Scene key="login" component={Login} title="Login"/>
-        <Scene key="register" component={Register} title="Register"/> */}
-        <Scene key='third' component={ButtonBasics} title='buttonz' />
-        <Scene key='Howdy' component={Howdy} title='Howdy' />
-        <Scene key="Home" component={Bananas}/>
-      </Stack>
-    </Router>
-    );
+      <Provider UserStore={new UserStore()}>
+        <Pages/>
+      </Provider>
+    )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  red: {
-    color: 'green',
-  },
-});

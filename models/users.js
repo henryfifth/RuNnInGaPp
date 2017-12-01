@@ -15,5 +15,6 @@ var UserSchema = new mongoose.Schema({
   },
   info: Boolean,
   secretId: String,
+  logs: Array,
 });
 module.exports = mongoose.model('User', UserSchema);

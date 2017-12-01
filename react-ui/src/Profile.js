@@ -15,7 +15,6 @@ var Profile = observer(class Profile extends Component {
     this.timeChange = this.timeChange.bind(this);
     this.runFunc = this.runFunc.bind(this);
     this.goToAdd = this.goToAdd.bind(this);
-    this.getIp = this.getIp.bind(this);
     this.state = {
       show: false,
       distance: null,
@@ -23,6 +22,7 @@ var Profile = observer(class Profile extends Component {
       msg: 'Congrats on going for a run!',
       initialized: false,
       shouldRedirect: false,
+      bool: true,
     }
   }
   addRun() {
@@ -90,12 +90,6 @@ var Profile = observer(class Profile extends Component {
     }
   }
 
-  getIp(){
-    axios.post('/addRoute').then((res)=>{
-      console.log(res)
-    })
-  }
-
   render() {
     if(this.state.shouldRedirect){
       var shouldRedirect = <Routie url='/addRoute' />;
@@ -129,6 +123,9 @@ var Profile = observer(class Profile extends Component {
     if (this.state.initialized) {
       if (this.props.UserStore.user.firstName) {
         var user = this.props.UserStore.user;
+        if(this.props.UserStore.gotIp === false){
+          this.props.UserStore.getIp();
+        }
         let stats = user.stats.map((e, i) => {
           if (e.date !== undefined) {
             return (<tr key={i}><td>Date: {e.date} Distance: {e.distance} Time: {e.time} Route: {e.route}</td></tr>)
@@ -156,7 +153,6 @@ var Profile = observer(class Profile extends Component {
             <br></br>
             <Button onClick={this.change}>Add a run</Button>
             <Button onClick={this.goToAdd}>Add a route</Button>
-            <Button onClick={this.getIp}>Get Ip</Button>
             {shouldRedirect}
             {addRun}
             <br></br>

@@ -1,4 +1,5 @@
 import { extendObservable } from "mobx";
+import { setTimeout } from "timers";
 var axios = require('axios');
 let lat = null;
 let lng = null;
@@ -15,6 +16,7 @@ export default class UserStore {
         message: '',
       },
       routes: [],
+      gotIp: false,
       get retrieveUser() {
         return this.user
       }
@@ -44,6 +46,7 @@ export default class UserStore {
 
   submitLogin(a, b) {
     return new Promise((resolve, reject) => {
+      console.log(b);
       axios.post('/login', {
         username: a,
         password: b,
@@ -65,6 +68,16 @@ export default class UserStore {
         }
       });
     });
+  }
+
+  getIp(){
+    this.gotIp = true;
+    setTimeout(()=>{
+      this.user.lat = lat;
+      this.user.lng = lng;
+      axios.post('/logActivity', {user: this.user});
+      //set a timeout, because location takes a bit to load.
+    }, 5000)
   }
 
   submitSignup(signupObj) {

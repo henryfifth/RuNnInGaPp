@@ -161,6 +161,7 @@ ioServer.on('connection', (client) => {
 });
 
 function sanitize(input) {
+  console.log(input)
   tim = input.toString();
   bob = input.split('');
   badChar = ['(', ')', '<', '>', '{', '}', '/', ';', '*', '[', ']', '"', "'", '$'];
@@ -188,7 +189,7 @@ app.post("/signup", (req, res, next) => {
   user.stats = [];
   user.info = false;
   user.secretId = sha256(user.firstName + user.email);
-  if (user.firstName != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
+  if (sanitize(user.firstName) != false && sanitize(user.lastName) != false && verifyEmail(sanitize(user.email)) != 0) {
     User.findOne({
       email: user.email
     }, (err, foundUser) => {
@@ -220,6 +221,7 @@ app.post("/signup", (req, res, next) => {
               routes: userReturned.routes,
               stats: userReturned.stats,
               connections: userReturned.connections,
+              info: user.info,
             });
           }
         });
@@ -234,6 +236,7 @@ app.post("/signup", (req, res, next) => {
 });
 
 app.post('/login', function (req, res, next) {
+  console.log(req.body)
   passport.authenticate('local', function (err, user) {
     if (err) {
       console.log(err)
@@ -245,16 +248,25 @@ app.post('/login', function (req, res, next) {
           next(err);
           res.json({ found: true, success: false, message: err })
         } else {
-          res.json({ found: true, success: true, user: user, message: 'U R l0gg3d 1n' });
+          res.json({ 
+            found: true,
+            success: true,
+            user: {
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              routes: user.routes,
+              stats: user.stats,
+              connections: user.connections,
+              info: user.info,
+            },
+            message: 'U R l0gg3d 1n' });
         }
       })
     } else {
       res.json({ found: false, success: false, message: "Password and username don't match." })
     }
   })(req, res, next);
-  //Not sure what these two lines are for, so I commented them out. Lol
-  // var email = req.body.email;
-  // var password = req.body.password;
 });
 
 app.post('/logout', (req, res) => {
@@ -265,12 +277,20 @@ app.post('/logout', (req, res) => {
 
 app.post('/getUser', (req, res, next) => {
   if (req.session.passport) {
-    User.findById(req.session.passport.user, (err, userFound) => {
+    User.findById(req.session.passport.user, (err, user) => {
       if (err) {
         console.log(err);
         next(err);
       } else {
-        res.json(userFound)
+        res.json({user: {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          routes: user.routes,
+          stats: user.stats,
+          connections: user.connections,
+          info: user.info,
+        }})
       }
     });
   } else {
@@ -304,14 +324,7 @@ app.post('/addRun', (req, res, next) => {
           console.log(error);
           next(error);
         } else {
-          User.findById({ _id: req.body.user._id }, (err, user) => {
-            if (err) {
-              console.log(err);
-              next(err);
-            } else {
-              res.json(user.stats)
-            }
-          });
+          res.json(userReturned.stats)
         }
       });
     }
@@ -358,8 +371,31 @@ app.post('/getRoutes', (req, res, next) => {
 });
 
 app.post('/addRoute', (req, res, next)=>{
-  console.log(req.connection.remoteAddress);
-  res.json(req.connection.remoteAddress)
+
+});
+
+app.post('/logActivity', (req, res, next)=>{
+  User.findByIdAndUpdate({ _id: req.session.passport.user }, "logs", (err, user) => {    
+  if(err){
+      console.log(err);
+      next(err);
+    }else{
+      let d = new Date;
+      user.logs.push({
+        date: d,
+        ip: req.connection.remoteAddress,
+        loc: req.body.user.lat + ", " + req.body.user.lng,
+      });
+      user.save((error, userReturned) => {
+        if(error){
+          console.log(error);
+          next(error);
+        }else{
+          res.json(null);
+        }
+      });
+    }
+  });
 });
 
 const port = process.env.PORT || 5000;
