@@ -123,9 +123,6 @@ var Profile = observer(class Profile extends Component {
     if (this.state.initialized) {
       if (this.props.UserStore.user.firstName) {
         var user = this.props.UserStore.user;
-        if(this.props.UserStore.gotIp === false){
-          this.props.UserStore.getIp();
-        }
         let stats = user.stats.map((e, i) => {
           if (e.date !== undefined) {
             return (<tr key={i}><td>Date: {e.date} Distance: {e.distance} Time: {e.time} Route: {e.route}</td></tr>)

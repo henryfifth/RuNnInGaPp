@@ -1,8 +1,8 @@
 import { extendObservable } from "mobx";
 import { setTimeout } from "timers";
 var axios = require('axios');
-let lat = null;
-let lng = null;
+let lat = 45;
+let lng = 45;
 function showPosition(position) {
   lat = position.coords.latitude;
   lng = position.coords.longitude;
@@ -16,7 +16,6 @@ export default class UserStore {
         message: '',
       },
       routes: [],
-      gotIp: false,
       get retrieveUser() {
         return this.user
       }
@@ -46,7 +45,6 @@ export default class UserStore {
 
   submitLogin(a, b) {
     return new Promise((resolve, reject) => {
-      console.log(b);
       axios.post('/login', {
         username: a,
         password: b,
@@ -55,8 +53,20 @@ export default class UserStore {
           this.user = res.data.user;
         }
         this.user.shouldRedirect = true;
+        console.log(lat + ', ' + lng);
         resolve(res.data);
       });
+    }).then(()=>{
+      axios.post('/getRoutes', {lat: lat, lng: lng}).then((res)=>{
+        console.log(res);
+        this.routes = res.data
+      });
+      setTimeout(()=>{
+        this.user.lat = lat;
+        this.user.lng = lng;
+        axios.post('/logActivity', {user: this.user});
+        //set a timeout, because location takes a bit to load.
+      }, 5000);
     });
   }
 
@@ -68,16 +78,6 @@ export default class UserStore {
         }
       });
     });
-  }
-
-  getIp(){
-    this.gotIp = true;
-    setTimeout(()=>{
-      this.user.lat = lat;
-      this.user.lng = lng;
-      axios.post('/logActivity', {user: this.user});
-      //set a timeout, because location takes a bit to load.
-    }, 5000)
   }
 
   submitSignup(signupObj) {

@@ -18,13 +18,16 @@ const helmet = require('helmet');
 const http = require('http');
 const path = require('path');
 const sha256 = require('js-sha256');
+const fs = require('fs');
 require('dotenv').config();
 
 const mongodbUri = 'mongodb://' + process.env.MLAB_USERNAME + ':' + process.env.MLAB_PASSWORD + '@ds259855.mlab.com:59855/everything';
 const mongooseUri = uriUtil.formatMongoose(mongodbUri);
 const options = {
   server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
+  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+  // key: fs.readFileSync('./key.pem'),
+  // cert: fs.readFileSync('./cert.pem')
 };
 const allowedOrigins = "http://localhost:* http://127.0.0.1:*";
 const ioServer = io(server, {
@@ -332,6 +335,7 @@ app.post('/addRun', (req, res, next) => {
 });
 
 app.post('/getRoutes', (req, res, next) => {
+  let done = false;
   if (req.session.passport) {
     User.findById(req.session.passport.user, (err, userFound) => {
       let routesToFind = [];
@@ -352,20 +356,21 @@ app.post('/getRoutes', (req, res, next) => {
               console.log(err);
             else
               routes.push(routeFound);
+            done = true;
           });
         });
-        Route.find({lat : {$gte: maxLat, $lt: minLat}, long: {$gte: maxLong, $lt: minLong}}, (error, routesFound)=>{
-          if(error)
-            console.log(error);
-          else
-            routes.push(routesFound);
-        });
-        console.log("SPLIT!")
-        console.log(routes);
-        res.json(routes);
-      }else{
-        res.json("No routes to find.");
       }
+      Route.find({lat : {$gte: req.body.lat - (111/3.5), $lt: req.body.lat + (111/3.5)}, long: {$gte: -180, $lt: 180}}, (error, routesFound)=>{
+        if(error)
+          console.log(error);
+        else{
+          routes.push(routesFound);
+          if(!done)
+            setTimeout(()=>{res.json(routesFound)}, 3000);
+          else
+            res.json(routesFound);
+        }
+      });
     });
   }
 });
@@ -398,7 +403,18 @@ app.post('/logActivity', (req, res, next)=>{
   });
 });
 
-const port = process.env.PORT || 5000;
-server.listen(port, () => {
-  console.log('listening on port ' + port);
-});
+// const port = process.env.PORT || 5000;
+// server.listen(port, () => {
+//   console.log('listening on port ' + port);
+// });
+
+var https = require('https');
+https.createServer(options, function (req, res) {
+    res.end('secure!');
+}).listen(5000);
+
+// Redirect from http port 80 to https
+http.createServer(function (req, res) {
+    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    res.end();
+}).listen(5001);

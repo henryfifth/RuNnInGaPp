@@ -5,7 +5,7 @@ import { COLOR, ThemeProvider } from 'react-native-material-ui';
 import { StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 const axios = require('axios');
 
-export default class Login extends Component {
+class Login extends Component {
   constructor() {
     super();
     this.updateFirst = this.updateFirst.bind(this);
@@ -40,18 +40,6 @@ export default class Login extends Component {
   updatePassword(input){
     this.setState({ password: input });
   }
-  submit(){
-    const { navigate } = this.props.navigation;    
-    axios.post('http://192.168.0.23:5000/login', {
-      username: this.state.email,
-      password: this.state.password,
-    }).then((res)=>{
-      if(res.data.success)
-        navigate('Profile')
-      else 
-        return <Text>Email and password don't match</Text>
-    })
-  }
   render() {
     const { navigate } = this.props.navigation;
     return (
@@ -74,7 +62,7 @@ export default class Login extends Component {
         />
         <View style={styles.buttonContainer}>
           <Button
-            onPress={()=>{this.submit()}} 
+            onPress={()=>{this.props.UserStore.login()}} 
             title="Login"
           />
         </View>
@@ -82,6 +70,8 @@ export default class Login extends Component {
     );
   }
 }
+
+export default inject('UserStore')(Login)
 
 const styles = StyleSheet.create({
   button: {
