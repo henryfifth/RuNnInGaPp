@@ -403,18 +403,20 @@ app.post('/logActivity', (req, res, next)=>{
   });
 });
 
-// const port = process.env.PORT || 5000;
-// server.listen(port, () => {
-//   console.log('listening on port ' + port);
-// });
+const port = process.env.PORT || 5000;
+server.listen(port, () => {
+  console.log('listening on port ' + port);
+});
 
-var https = require('https');
-https.createServer(options, function (req, res) {
-    res.end('secure!');
-}).listen(5000);
+//TODO:
+//Get the http redirect to https working
+// var https = require('https');
+// https.createServer(options, function (req, res) {
+//     res.end('secure!');
+// }).listen(5000);
 
-// Redirect from http port 80 to https
-http.createServer(function (req, res) {
-    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
-    res.end();
-}).listen(5001);
+// // Redirect from http port 80 to https
+// http.createServer(function (req, res) {
+//     res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+//     res.end();
+// }).listen(5001);
