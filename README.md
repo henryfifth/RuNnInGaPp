@@ -1,1 +1,1 @@
-This is a cool app.
+This is an app meant to keep track of your running and routes that run. It also suggests routes other people ran in your area.

@@ -8,8 +8,10 @@ var RouteSchema = new mongoose.Schema({
   distance: Number,
   altitude: Number,
   created: Date,
-  createdBy: {type: Array},
-  private: {type: Boolean, required: true},
+  createdBy: {
+    name: String,
+    email: String,
+  },
   name: String,
 });
 module.exports = mongoose.model('Route', RouteSchema);

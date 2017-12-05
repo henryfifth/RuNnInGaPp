@@ -1,14 +1,13 @@
-import React, {Component} from "react"
+import React from "react"
 import { compose, withProps, lifecycle } from "recompose"
 import {
-  withScriptjs,
   withGoogleMap,
   GoogleMap,
   Marker,
-  // DirectionsRenderer,
+  DirectionsRenderer,
   // SearchBox,
 } from "react-google-maps"
-import { inject, observer } from 'mobx-react';
+import { inject } from 'mobx-react';
 const { SearchBox } = require("react-google-maps/lib/components/places/SearchBox");
 const _ = require("lodash");
 let prop;
@@ -25,15 +24,28 @@ const google = window.google;
 
 const MyMapComponent = compose(
   withProps({
-    googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyCtpXu-hxulJS3_IBz4gGRhctZXixpHCqs&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: <div style={{ height: `600px` }} />,
     mapElement: <div style={{ height: `100%` }} />,
   }),
   lifecycle({
     componentWillMount() {
+      const DirectionsService = new google.maps.DirectionsService();
       const refs = {}
 
+      DirectionsService.route({
+        origin: new google.maps.LatLng(45.674944100000005, -111.14405769999999),
+        destination: new google.maps.LatLng(45.674944100000005, -111),
+        travelMode: google.maps.TravelMode.WALKING,
+      }, (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+          this.setState({
+            directions: result,
+          });
+        } else {
+          console.error(`error fetching directions ${result}`);
+        }
+      })
       this.setState({
         bounds: null,
         center: {
@@ -77,7 +89,6 @@ const MyMapComponent = compose(
       })
     },
   }),
-  withScriptjs,
   withGoogleMap,
 )((props) =>
   <GoogleMap
@@ -85,7 +96,8 @@ const MyMapComponent = compose(
     onBoundsChanged={props.onBoundsChanged}
     defaultZoom={prop.zoom}
     defaultCenter={{ lat: lat, lng: lng }}
-    // center={props.center}
+    onClick={(e)=>{props.UserStore.addRouteInfo(e, props.UserStore)}}
+  // center={props.center}
   >
     <SearchBox
       ref={props.onSearchBoxMounted}
@@ -95,7 +107,7 @@ const MyMapComponent = compose(
     >
       <input
         type="text"
-        placeholder="Search an location"
+        placeholder="Search a location"
         style={{
           boxSizing: `border-box`,
           border: `1px solid transparent`,
@@ -127,13 +139,15 @@ class Map extends React.PureComponent {
 
   render() {
     prop = this.props
+    console.log(prop)
     routes = prop.UserStore.routes.map((e, i) => {
-      return true && <Marker position={{ lat: e.beginLat, lng: e.beginLng }} />
+      return true && <DirectionsRenderer directions={{ lat: e.beginLat, lng: e.beginLng }} />
     })
     return (
       <MyMapComponent
         isMarkerShown={this.state.isMarkerShown}
         onMarkerClick={this.handleMarkerClick}
+        UserStore={this.props.UserStore}
       />
     )
   }

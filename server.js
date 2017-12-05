@@ -19,6 +19,7 @@ const http = require('http');
 const path = require('path');
 const sha256 = require('js-sha256');
 const fs = require('fs');
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 require('dotenv').config();
 
 const mongodbUri = 'mongodb://' + process.env.MLAB_USERNAME + ':' + process.env.MLAB_PASSWORD + '@ds259855.mlab.com:59855/everything';
@@ -85,7 +86,6 @@ passport.deserializeUser(function (id, done) {
 });
 
 function verifyEmail(email) {
-  console.log(email)
   let emailReplaced = email.replace(/ /g, '');
   let emailSplit = emailReplaced.split(',');
   let arr = [];
@@ -164,7 +164,6 @@ ioServer.on('connection', (client) => {
 });
 
 function sanitize(input) {
-  console.log(input)
   tim = input.toString();
   bob = input.split('');
   badChar = ['(', ')', '<', '>', '{', '}', '/', ';', '*', '[', ']', '"', "'", '$'];
@@ -239,7 +238,6 @@ app.post("/signup", (req, res, next) => {
 });
 
 app.post('/login', function (req, res, next) {
-  console.log(req.body)
   passport.authenticate('local', function (err, user) {
     if (err) {
       console.log(err)
@@ -320,7 +318,6 @@ app.post('/addRun', (req, res, next) => {
       console.log(err);
     } else {
       let d = new Date;
-      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
       user.stats.push({ distance: req.body.distance, time: req.body.time, date: months[d.getMonth()] + " " + d.getDay() + ", " + d.getFullYear() })
       user.save((error, userReturned) => {
         if (error) {
@@ -360,15 +357,28 @@ app.post('/getRoutes', (req, res, next) => {
           });
         });
       }
-      Route.find({lat : {$gte: req.body.lat - (111/3.5), $lt: req.body.lat + (111/3.5)}, long: {$gte: -180, $lt: 180}}, (error, routesFound)=>{
+      console.log('here')
+      console.log(req.body)
+      Route.find({
+        start: { 
+          lat: {
+            $gte: req.body.lat - (111/3.5), 
+            $lt: req.body.lat + (111/3.5)}, 
+          lng: {
+            $gte: req.body.lng - (Math.cos(req.body.lat * (Math.PI/180))), 
+            $lt: req.body.lng + (Math.cos(req.body.lat * (Math.PI/180))) 
+          }
+        }
+      }, (error, routesFound)=>{
+        console.log('here?')
         if(error)
           console.log(error);
         else{
           routes.push(routesFound);
-          if(!done)
-            setTimeout(()=>{res.json(routesFound)}, 3000);
-          else
-            res.json(routesFound);
+          console.log(routesFound);
+          console.log('routes')
+          console.log(routes)
+          res.json(routesFound);
         }
       });
     });
@@ -376,32 +386,40 @@ app.post('/getRoutes', (req, res, next) => {
 });
 
 app.post('/addRoute', (req, res, next)=>{
-
-});
-
-app.post('/logActivity', (req, res, next)=>{
-  User.findByIdAndUpdate({ _id: req.session.passport.user }, "logs", (err, user) => {    
-  if(err){
+  var route = new Route;
+  var d = new Date;
+  route.start = req.body.route.info[0];
+  route.end = req.body.route.info[2];
+  route.waypoints = req.body.route.info[1];
+  route.created = req.headers.date;
+  route.createdBy.name = req.user.firstName + " " + req.user.lastName;
+  route.name = req.body.route.name;
+  User.findById(req.session.passport.user, (err, userFound) => {
+    if(err){
       console.log(err);
       next(err);
     }else{
-      let d = new Date;
-      user.logs.push({
-        date: d,
-        ip: req.connection.remoteAddress,
-        loc: req.body.user.lat + ", " + req.body.user.lng,
-      });
-      user.save((error, userReturned) => {
+      userFound.routes.created.push(route._id);
+      userFound.save((error)=>{
         if(error){
           console.log(error);
           next(error);
-        }else{
-          res.json(null);
         }
-      });
+      })
     }
   });
+  route.save((error, routeReturned)=>{
+    if(error){
+      console.log(error);
+      next(error);
+    }else{
+      res.json({
+        msg: 'Route created successfully.'
+      })
+    }
+  })
 });
+
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => {

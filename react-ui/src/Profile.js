@@ -91,10 +91,11 @@ var Profile = observer(class Profile extends Component {
   }
 
   render() {
+    this.props.UserStore.adding = false;
     if(this.state.shouldRedirect){
       var shouldRedirect = <Routie url='/addRoute' />;
     }else{
-      var shouldRedirect = null;
+      shouldRedirect = null;
     }
     if (this.state.show) {
       var addRun = (
@@ -148,7 +149,7 @@ var Profile = observer(class Profile extends Component {
               </tbody>
             </table>
             <br></br>
-            <Button onClick={this.change}>Add a run</Button>
+            <Button onClick={this.change} style={{marginRight: 5}}>Add a run</Button>
             <Button onClick={this.goToAdd}>Add a route</Button>
             {shouldRedirect}
             {addRun}
