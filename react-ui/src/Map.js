@@ -54,16 +54,16 @@ const MyMapComponent = compose(
         destination: new google.maps.LatLng(45.66104961368346,  -111.1937427520752),
         waypoints: [{
           location: new google.maps.LatLng(45.66512859541803,  -111.19322776794434), 
-          stopover: true
+          stopover: false
         },{
           location: new google.maps.LatLng(45.67880301247679,  -111.19614601135254), 
-          stopover: true
+          stopover: false
         },{
           location: new google.maps.LatLng( 45.681681411392695,  -111.19357109069824), 
-          stopover: true
+          stopover: false
         },{
           location: new google.maps.LatLng(45.67282461453129,  -111.18322849273682), 
-          stopover: true
+          stopover: false
         }],
         travelMode: google.maps.TravelMode.WALKING,
       }, (result, status) => {
