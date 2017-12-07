@@ -31,7 +31,6 @@ var Login = observer(class Login extends Component {
         this.props.UserStore.submitLogin(this.props.UserStore.user.email, this.props.UserStore.user.password)
       .then(() => {
         if(this.props.UserStore.user.shouldRedirect){
-          this.props.UserStore.getRoutes();
           this.redirect('/profile')
         }
       })

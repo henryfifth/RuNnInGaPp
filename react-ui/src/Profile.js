@@ -65,7 +65,7 @@ var Profile = observer(class Profile extends Component {
       })
     }
   }
-  goToAdd(){
+  goToAdd() {
     this.setState({
       shouldRedirect: true,
     })
@@ -77,24 +77,16 @@ var Profile = observer(class Profile extends Component {
   }
 
   componentDidMount() {
-    if (this.props.UserStore.user.firstName === undefined) {
-      setTimeout(() => {
-        this.setState({
-          initialized: true
-        });
-      }, 1000)
-    } else {
-      this.setState({
-        initialized: true
-      });
-    }
+    this.setState({
+      initialized: true
+    });
   }
 
   render() {
     this.props.UserStore.adding = false;
-    if(this.state.shouldRedirect){
+    if (this.state.shouldRedirect) {
       var shouldRedirect = <Routie url='/addRoute' />;
-    }else{
+    } else {
       shouldRedirect = null;
     }
     if (this.state.show) {
@@ -126,8 +118,8 @@ var Profile = observer(class Profile extends Component {
         var user = this.props.UserStore.user;
         let stats = user.stats.map((e, i) => {
           if (e.date !== undefined) {
-            return (<tr key={i}><td>Date: {e.date} Distance: {e.distance} Time: {e.time} Route: {e.route}</td></tr>)
-          }else{
+            return (<tr key={i}><td>Date: {e.date} </td><td> Distance: {e.distance} </td><td>Time: {e.time} </td><td>Route: {e.route}</td></tr>)
+          } else {
             return null;
           }
         })
@@ -149,13 +141,12 @@ var Profile = observer(class Profile extends Component {
               </tbody>
             </table>
             <br></br>
-            <Button onClick={this.change} style={{marginRight: 5}}>Add a run</Button>
             <Button onClick={this.goToAdd}>Add a route</Button>
             {shouldRedirect}
             {addRun}
             <br></br>
             <br></br>
-            <Map zoom={15} height={400}/>
+            <Map zoom={15} height={400} />
           </div>
         )
       } else {

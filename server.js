@@ -187,7 +187,7 @@ app.post("/signup", (req, res, next) => {
   user.lastName = req.body.lastName;
   user.email = req.body.email;
   user.password = req.body.password;
-  user.routes = {created: [], ran: [], saved: []};
+  user.routes = { created: [], ran: [], saved: [] };
   user.stats = [];
   user.info = false;
   user.secretId = sha256(user.firstName + user.email);
@@ -249,7 +249,7 @@ app.post('/login', function (req, res, next) {
           next(err);
           res.json({ found: true, success: false, message: err })
         } else {
-          res.json({ 
+          res.json({
             found: true,
             success: true,
             user: {
@@ -261,7 +261,8 @@ app.post('/login', function (req, res, next) {
               connections: user.connections,
               info: user.info,
             },
-            message: 'U R l0gg3d 1n' });
+            message: 'U R l0gg3d 1n'
+          });
         }
       })
     } else {
@@ -283,15 +284,17 @@ app.post('/getUser', (req, res, next) => {
         console.log(err);
         next(err);
       } else {
-        res.json({user: {
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          routes: user.routes,
-          stats: user.stats,
-          connections: user.connections,
-          info: user.info,
-        }})
+        res.json({
+          user: {
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            routes: user.routes,
+            stats: user.stats,
+            connections: user.connections,
+            info: user.info,
+          }
+        })
       }
     });
   } else {
@@ -313,12 +316,16 @@ app.post('/verify', (req, res, next) => {
 });
 
 app.post('/addRun', (req, res, next) => {
-  User.findByIdAndUpdate({ _id: req.body.user._id }, "routes", (err, user) => {
+  User.findById({ _id: req.session.passport.user }, (err, user) => {
     if (err) {
       console.log(err);
     } else {
       let d = new Date;
-      user.stats.push({ distance: req.body.distance, time: req.body.time, date: months[d.getMonth()] + " " + d.getDay() + ", " + d.getFullYear() })
+      user.stats.push({ 
+        distance: req.body.distance, 
+        time: req.body.time, 
+        date: months[d.getMonth()] + " " + d.getDay() + ", " + d.getFullYear()
+      })
       user.save((error, userReturned) => {
         if (error) {
           console.log(error);
@@ -331,88 +338,105 @@ app.post('/addRun', (req, res, next) => {
   });
 });
 
-app.post('/getRoutes', (req, res, next) => {
+app.post('/getRecomendedRoutes', (req, res, next) => {
   let done = false;
   if (req.session.passport) {
     User.findById(req.session.passport.user, (err, userFound) => {
       let routesToFind = [];
-      let routes = [];
-      userFound.routes.created.forEach((e, i)=>{
-        routesToFind.push(e.id);
+      let routesFound = [];
+      //Routes the user created
+      userFound.routes.created.forEach((e, i) => {
+        routesToFind.push(e);
       });
-      userFound.routes.ran.forEach((e, i)=>{
-        routesToFind.push(e.id);
+      //Routes the user ran
+      userFound.routes.ran.forEach((e, i) => {
+        routesToFind.push(e);
       });
-      userFound.routes.saved.forEach((e, i)=>{
-        routesToFind.push(e.id);
+      //Routes the user saved
+      userFound.routes.saved.forEach((e, i) => {
+        routesToFind.push(e);
       });
-      if(routesToFind.length > 0){
-        routesToFind.forEach((e, i)=>{
-          Route.findById(e, (err, routeFound)=>{
-            if(err)
+      if (routesToFind.length > 0) {
+        routesToFind.forEach((e, i) => {
+          Route.findById(e, (err, routeFound) => {
+            if (err)
               console.log(err);
-            else
-              routes.push(routeFound);
-            done = true;
+            else{
+              routesFound.push(routeFound);
+            }
+            if(i >= routesToFind.length){
+              done = true;
+            }
           });
-        });
-      }
-      console.log('here')
-      console.log(req.body)
-      Route.find({
-        start: { 
-          lat: {
-            $gte: req.body.lat - (111/3.5), 
-            $lt: req.body.lat + (111/3.5)}, 
-          lng: {
-            $gte: req.body.lng - (Math.cos(req.body.lat * (Math.PI/180))), 
-            $lt: req.body.lng + (Math.cos(req.body.lat * (Math.PI/180))) 
-          }
-        }
-      }, (error, routesFound)=>{
-        console.log('here?')
-        if(error)
-          console.log(error);
-        else{
-          routes.push(routesFound);
-          console.log(routesFound);
-          console.log('routes')
-          console.log(routes)
+        })
+        if(!done){
+          setTimeout(()=>{
+            res.json(routesFound)
+          }, 2000)
+        }else{
           res.json(routesFound);
         }
-      });
+      }
     });
   }
 });
 
-app.post('/addRoute', (req, res, next)=>{
+app.post('/getGeoRoutes', () => {
+  Route.find({
+    start: {
+      lat: {
+        $gte: req.body.lat - (3.5 / 111),
+        $lt: req.body.lat + (3.5 / 111)
+      },
+      // lng: {
+      //   $lt: req.body.lng - (Math.cos(req.body.lat * (Math.PI/180))), 
+      //   $gte: req.body.lng + (Math.cos(req.body.lat * (Math.PI/180))) 
+      // }
+    }
+  }, (error, routesFound) => {
+    console.log('here?')
+    if (error)
+      console.log(error);
+    else {
+      routes.push(routesFound);
+      console.log(routesFound);
+      console.log('routes')
+      console.log(routes)
+      res.json(routesFound);
+    }
+  });
+
+});
+
+app.post('/addRoute', (req, res, next) => {
+  let reqinfo = req.body.route.info;
   var route = new Route;
   var d = new Date;
-  route.start = req.body.route.info[0];
-  route.end = req.body.route.info[2];
-  route.waypoints = req.body.route.info[1];
+  route.start = reqinfo.start;
+  route.end = reqinfo.end;
+  route.waypoints = reqinfo.waypoints;
   route.created = req.headers.date;
   route.createdBy.name = req.user.firstName + " " + req.user.lastName;
   route.name = req.body.route.name;
   User.findById(req.session.passport.user, (err, userFound) => {
-    if(err){
+    if (err) {
       console.log(err);
       next(err);
-    }else{
+    } else {
       userFound.routes.created.push(route._id);
-      userFound.save((error)=>{
-        if(error){
+      userFound.save((error) => {
+        if (error) {
           console.log(error);
           next(error);
         }
       })
     }
   });
-  route.save((error, routeReturned)=>{
-    if(error){
+  route.save((error, routeReturned) => {
+    if (error) {
       console.log(error);
       next(error);
-    }else{
+    } else {
       res.json({
         msg: 'Route created successfully.'
       })

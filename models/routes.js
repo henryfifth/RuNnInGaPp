@@ -1,8 +1,14 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var RouteSchema = new mongoose.Schema({
-  start: Array,
-  end: Array,
+  start: {
+    lat: Number,
+    lng: Number,
+  },
+  end: {
+    lat: Number,
+    lng: Number,
+  },
   waypoints: Array,
   popularity: Number,
   distance: Number,

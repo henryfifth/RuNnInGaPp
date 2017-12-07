@@ -1,9 +1,17 @@
 //TODO: Add comments
 
 import { extendObservable } from "mobx";
+import {
+  withGoogleMap,
+  GoogleMap,
+  Marker,
+  DirectionsRenderer,
+} from "react-google-maps"
 var axios = require('axios');
 let lat = 45;
 let lng = 45;
+const google = window.google;
+
 function showPosition(position) {
   lat = position.coords.latitude;
   lng = position.coords.longitude;
@@ -17,9 +25,14 @@ export default class UserStore {
         message: '',
       },
       routes: [],
+      shownRoutes: [],
       routeToAdd: {
         type: null,
-        info: [[], [], []]
+        info: {
+          start: null,
+          waypoints: [],
+          end: null,
+        }
       },
       adding: false,
       get retrieveUser() {
@@ -41,30 +54,37 @@ export default class UserStore {
     return lng;
   }
 
-  getRoutes() {
-    axios.post('/getRoutes', {}).then((res) => {
-      if (res.data.success) {
-        this.routes = res.data.routes;
+  addRouteInfo(e) {
+    let a = this.routeToAdd
+    console.log(a.info.waypoints);
+    let mousePos = { lat: e.latLng.lat(), lng: e.latLng.lng() }
+    if (this.adding) {
+      switch (a.type) {
+        case 0:
+          a.info.start = mousePos
+          break;
+        case 1:
+          a.info.waypoints.push(mousePos);
+          break;
+        case 2:
+          a.info.end = mousePos
+          break;
+        case 3:
+          a.info = {
+            start: null,
+            waypoints: [],
+            end: null,
+          }
+          break;
+        case 4:
+          this.addRoute();
+          break;
+        default:
+          break;
       }
-    });
-  }
-
-  addRouteInfo(e, that) {
-    //for some reason, google maps changes 'this' so i pass this.props.UserStore 
-    //in the GoogleMap component to addRouteInfo when it is called
-    if (that.routeToAdd.type <= 2 && that.adding && typeof that.routeToAdd.type === 'number')
-      that.routeToAdd.info[that.routeToAdd.type].push({ lat: e.ga.x, lng: e.ga.y });
-    else if (that.routeToAdd.type === 3)
-      that.routeToAdd.info = [0, 0, 0];
-    //and this is how I pass the info back to the userStore.
-    that.horribleHack(that.routeToAdd.info)
-    //Please don't ask me how it works.
-  }
-
-  horribleHack(info) {
-    this.routeToAdd.info = info;
-    if (this.routeToAdd.type === 4)
-      this.addRoute();
+    }
+    this.routeToAdd = a;
+    console.log(this.routeToAdd);
   }
 
   addRoute() {
@@ -89,25 +109,15 @@ export default class UserStore {
           this.user = res.data.user;
         }
         this.user.shouldRedirect = true;
-        console.log(lat + ', ' + lng);
         resolve(res.data);
       });
     }).then(() => {
-      if (lat === 45 && lng === 45) {
-        setTimeout(() => {
-          console.log(lat + ', ' + lng)
-          axios.post('/getRoutes', { lat: lat, lng: lng }).then((res) => {
-            console.log(res);
-            this.routes = res.data
-          });
-        }, 3000);
-      } else {
-        console.log(lat + ', ' + lng)
-        axios.post('/getRoutes', { lat: lat, lng: lng }).then((res) => {
-          console.log(res);
-          this.routes = res.data
-        });
-      }
+      console.log('106')
+      axios.post('/getRecomendedRoutes', { lat: lat, lng: lng }).then((res) => {
+        console.log(res);
+        this.routes = res.data
+        console.log(this.routes);
+      });
     });
   }
 
