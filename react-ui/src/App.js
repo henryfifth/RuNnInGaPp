@@ -17,6 +17,7 @@ import Navbar from './Navbar/Navbar';
 import Footer from './Footer/Footer';
 import NotFoundRoute from './NotFoundRoute.js';
 import AddRoute from './AddRoute';
+import About from './About';
 import { Container, Segment } from 'semantic-ui-react';
 
 class App extends Component {
@@ -44,6 +45,7 @@ class App extends Component {
                     <Route path='/login' render={() => <Login />} />
                     <Route path='/logout' render={() => <Logout />} />
                     <Route path='/addRoute' render={()=><AddRoute />} />
+                    <Route path='/about' render={()=> <About/>} />
                     <Route render={() => <NotFoundRoute />} />
                   </Switch>
                 </Container>
