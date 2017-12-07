@@ -141,7 +141,7 @@ var Profile = observer(class Profile extends Component {
               </tbody>
             </table>
             <br></br>
-            <Button onClick={this.goToAdd}>Add a route</Button>
+            {/* <Button onClick={this.goToAdd}>Add a route</Button> */}
             {shouldRedirect}
             {addRun}
             <br></br>

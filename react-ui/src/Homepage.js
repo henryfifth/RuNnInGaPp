@@ -46,25 +46,19 @@ export default class Homepage extends Component {
         <Container textAlign='center' style={{ paddingTop: '2em', paddingBottom: '2em' }}>
           <Icon name='map' size="huge" fitted />
           <Header as='h2' icon textAlign='center'>
-            Find local favorites
+            Find local routes
         </Header>
           <p style={{ fontSize: '1.33em' }}>
-            Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but it's really
-              true.
-              It took years of gene splicing and combinatory DNA research, but our bananas can really dance.
-            </p>
-          <Button basic as={Link} to="/about" size='large'>I'm Still Quite Interested</Button>
+            Find new routes that people in your area have already run or create your own
+          </p>
           <Divider horizontal />
           <Icon name='trophy' size="huge" fitted />
           <Header as='h2' icon textAlign='center'>
-            Complete your fitness goals
+            Achieve your fitness goals
         </Header>
           <p style={{ fontSize: '1.33em' }}>
-            Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but it's really
-              true.
-              It took years of gene splicing and combinatory DNA research, but our bananas can really dance.
-            </p>
-          <Button basic as={Link} to="/about" size='large'>I'm Still Quite Interested</Button>
+            Keep track of your running and achieve your fitness goals.
+          </p>
         </Container>
       </div>
     );
