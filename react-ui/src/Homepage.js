@@ -27,13 +27,13 @@ export default class Homepage extends Component {
           <Container text style={{ paddingTop: '2em', paddingBottom: '2em' }}>
             <Header
               as='h1'
-              content='Finish the race'
+              content='Runn'
               inverted
               style={{ fontSize: '3em', fontWeight: 'normal', marginBottom: 0, marginTop: '1em' }}
             />
             <Header
               as='h2'
-              content='Prepare to achieve your fitness dreams'
+              content=''
               inverted
               style={{ fontSize: '1.7em', fontWeight: 'normal' }}
             />
