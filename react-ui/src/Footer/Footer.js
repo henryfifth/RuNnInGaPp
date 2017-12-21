@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import {
   Container,
   Grid,
-  Header,
-  List,
+  // Header,
+  // List,
   Segment,
 } from 'semantic-ui-react';
 

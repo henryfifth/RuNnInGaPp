@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 //Make sure you get Button from react-native not react-native-material-ui
 import { AppRegistry, Image, View, Button } from 'react-native';
 import { COLOR, ThemeProvider } from 'react-native-material-ui';
+import { inject, observer } from 'mobx-react';
 import { StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 const axios = require('axios');
 
-class Login extends Component {
+var Login = observer(class Login extends Component {
   constructor() {
     super();
-    this.updateFirst = this.updateFirst.bind(this);
-    this.updateLast = this.updateLast.bind(this);
+    // this.updateFirst = this.updateFirst.bind(this);
+    // this.updateLast = this.updateLast.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.state = {
@@ -62,14 +63,14 @@ class Login extends Component {
         />
         <View style={styles.buttonContainer}>
           <Button
-            onPress={()=>{this.props.UserStore.login()}} 
+            onPress={()=>{this.props.UserStore.login(navigate, this.state.email, this.state.password)}} 
             title="Login"
           />
         </View>
       </View>
     );
   }
-}
+});
 
 export default inject('UserStore')(Login)
 

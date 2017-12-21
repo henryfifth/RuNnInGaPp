@@ -1,16 +1,10 @@
 //TODO: Add comments
 
 import { extendObservable } from "mobx";
-import {
-  withGoogleMap,
-  GoogleMap,
-  Marker,
-  DirectionsRenderer,
-} from "react-google-maps"
+
 var axios = require('axios');
 let lat = 45;
 let lng = 45;
-const google = window.google;
 
 function showPosition(position) {
   lat = position.coords.latitude;

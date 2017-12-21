@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { AppRegistry, Image, View, Button } from 'react-native';
 import { COLOR, ThemeProvider } from 'react-native-material-ui';
 import { StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
-const axios = require('axios');
+import { inject, observer } from 'mobx-react';
 
-export default class Login extends Component {
+const Profile = observer(class Profile extends Component {
   static navigationOptions = {
     title: "Profile",
     tabBarLabel: 'Profile',
@@ -25,11 +25,29 @@ export default class Login extends Component {
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
-        
+        {/* <View style={styles.buttonContainer}>
+          <Button
+            onPress={()=>{console.log(this.props.UserStore.user)}} 
+            title="Get Info"
+          />
+        </View> */}
+        <Text>
+          Hello, {this.props.UserStore.user.user.firstName}
+        </Text>
+        <View style={styles.buttonContainer}>
+          <Button
+            onPress={()=>{
+              navigate('Run')
+            } }
+            title="Go for a run"
+          />
+        </View>
       </View>
     );
   }
-}
+});
+
+export default inject('UserStore')(Profile)
 
 const styles = StyleSheet.create({
   button: {
@@ -41,8 +59,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#7567B1',
     justifyContent: 'center'
   },
-  inputText:{
-    height: 50,   
+  inputText: {
+    height: 50,
     borderColor: COLOR.brown100,
     borderWidth: 1,
     backgroundColor: 'white',

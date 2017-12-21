@@ -9,6 +9,7 @@ import {
 import { inject } from 'mobx-react';
 const { SearchBox } = require("react-google-maps/lib/components/places/SearchBox");
 const _ = require("lodash");
+
 let prop;
 let routes;
 let shownRoutes;
@@ -46,7 +47,7 @@ const MyMapComponent = compose(
         } else {
           console.error(`error fetching directions ${result}`);
         }
-      }),
+      })
       //3
       DirectionsService.route({
         // draggable: true,
@@ -74,7 +75,7 @@ const MyMapComponent = compose(
         } else {
           console.error(`error fetching directions ${result}`);
         }
-      }),
+      })
       this.setState({
         bounds: null,
         center: {
